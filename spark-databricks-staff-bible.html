@@ -1,0 +1,2021 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spark & Databricks — Staff Engineer Interview Bible | $400K Edition</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08090f;--bg2:#0d0f1a;--card:#11131e;--card-h:#14172a;
+  --bdr:#1e2235;--bdr-b:#2a2f4a;
+  --tx:#e2e6f0;--tx-m:#7a7f9a;--tx-d:#4a4f6a;
+  --org:#ff6a00;--org-s:#ff8c3a;--org-g:rgba(255,106,0,.15);
+  --blu:#0ea5e9;--blu-s:#38bdf8;--blu-g:rgba(14,165,233,.12);
+  --grn:#10b981;--grn-g:rgba(16,185,129,.12);
+  --pur:#a855f7;--amb:#f59e0b;--red:#ef4444;
+  --cat-arch:#ff6a00;--cat-perf:#f59e0b;--cat-delta:#06b6d4;
+  --cat-stream:#8b5cf6;--cat-dbx:#10b981;--cat-design:#ec4899;
+  --cat-ml:#3b82f6;--cat-lead:#84cc16;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--tx);font-family:'Barlow',sans-serif;font-size:15px;line-height:1.65;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(255,106,0,.07) 0%,transparent 60%),radial-gradient(ellipse 60% 40% at 100% 90%,rgba(14,165,233,.05) 0%,transparent 50%);pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.013) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.013) 1px,transparent 1px);background-size:64px 64px;pointer-events:none;z-index:0}
+.wrap{max-width:1100px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+
+/* HEADER */
+.hdr{padding:56px 0 36px;border-bottom:1px solid var(--bdr);margin-bottom:36px}
+.eyebrow{display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,rgba(255,106,0,.2),rgba(255,140,58,.08));border:1px solid rgba(255,106,0,.35);color:var(--org-s);font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2.5px;padding:4px 12px;border-radius:3px;text-transform:uppercase;margin-bottom:14px}
+h1{font-family:'Russo One',sans-serif;font-size:clamp(26px,4.5vw,46px);line-height:1.08;background:linear-gradient(140deg,#fff 0%,var(--org-s) 55%,var(--org) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px}
+.sub{color:var(--tx-m);font-size:15px}
+.stats{display:flex;gap:36px;flex-wrap:wrap;margin-top:24px}
+.stat .n{font-family:'Russo One',sans-serif;font-size:30px;color:var(--org);line-height:1;display:block}
+.stat .l{font-size:11px;color:var(--tx-d);text-transform:uppercase;letter-spacing:1.2px;font-weight:600}
+
+/* PROGRESS */
+.prog-bar-section{background:var(--card);border:1px solid var(--bdr);border-radius:8px;padding:14px 20px;margin-bottom:28px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.prog-lbl{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx-m);white-space:nowrap}
+.prog-track{flex:1;min-width:180px;background:var(--bdr);border-radius:4px;height:7px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--grn),#34d399);border-radius:4px;transition:width .4s ease;width:0%}
+.prog-ct{font-family:'Fira Code',monospace;font-size:13px;color:var(--grn);white-space:nowrap}
+.btn-rst{background:none;border:1px solid var(--bdr);color:var(--tx-m);padding:4px 12px;border-radius:4px;font-size:12px;cursor:pointer;font-family:'Barlow',sans-serif;transition:all .2s}
+.btn-rst:hover{border-color:var(--red);color:var(--red)}
+
+/* CONTROLS */
+.ctrl{display:flex;gap:14px;margin-bottom:22px;flex-wrap:wrap;align-items:center}
+.srch-wrap{flex:1;min-width:210px;position:relative}
+.srch-wrap svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--tx-d);width:15px;height:15px}
+.srch{width:100%;background:var(--card);border:1px solid var(--bdr);border-radius:6px;padding:9px 13px 9px 36px;color:var(--tx);font-family:'Barlow',sans-serif;font-size:14px;outline:none;transition:border-color .2s}
+.srch::placeholder{color:var(--tx-d)}
+.srch:focus{border-color:var(--org)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{display:flex;align-items:center;gap:6px;padding:6px 13px;border-radius:6px;border:1px solid var(--bdr);background:var(--card);color:var(--tx-m);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:.5px;cursor:pointer;transition:all .2s;white-space:nowrap}
+.tab:hover{border-color:var(--bdr-b);color:var(--tx)}
+.tab .ct{font-family:'Fira Code',monospace;font-size:10px;opacity:.65}
+.tab[data-cat=all].on{color:var(--org);border-color:var(--org);background:var(--org-g)}
+.tab[data-cat=arch].on{color:var(--cat-arch);border-color:var(--cat-arch);background:rgba(255,106,0,.08)}
+.tab[data-cat=perf].on{color:var(--cat-perf);border-color:var(--cat-perf);background:rgba(245,158,11,.08)}
+.tab[data-cat=delta].on{color:var(--cat-delta);border-color:var(--cat-delta);background:rgba(6,182,212,.08)}
+.tab[data-cat=stream].on{color:var(--cat-stream);border-color:var(--cat-stream);background:rgba(139,92,246,.08)}
+.tab[data-cat=dbx].on{color:var(--cat-dbx);border-color:var(--cat-dbx);background:rgba(16,185,129,.08)}
+.tab[data-cat=design].on{color:var(--cat-design);border-color:var(--cat-design);background:rgba(236,72,153,.08)}
+.tab[data-cat=ml].on{color:var(--cat-ml);border-color:var(--cat-ml);background:rgba(59,130,246,.08)}
+.tab[data-cat=lead].on{color:var(--cat-lead);border-color:var(--cat-lead);background:rgba(132,204,22,.08)}
+
+/* CATEGORY SECTION */
+.cat-sec{margin-bottom:44px}
+.cat-hdr{display:flex;align-items:center;gap:11px;margin-bottom:14px;padding-bottom:11px;border-bottom:1px solid var(--bdr)}
+.cat-ico{font-size:18px}
+.cat-ttl{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:800;letter-spacing:1px;text-transform:uppercase}
+.cat-pill{font-family:'Fira Code',monospace;font-size:10px;padding:2px 9px;border-radius:20px;border:1px solid currentColor;opacity:.75}
+
+/* Q CARD */
+.qc{background:var(--card);border:1px solid var(--bdr);border-radius:8px;margin-bottom:9px;overflow:hidden;transition:border-color .2s}
+.qc:hover{border-color:var(--bdr-b)}
+.qc.mastered{border-color:rgba(16,185,129,.4)}
+.qc.mastered .qh{background:rgba(16,185,129,.03)}
+.qc.hidden{display:none}
+.qh{display:flex;align-items:center;gap:13px;padding:15px 18px;cursor:pointer;user-select:none;transition:background .2s}
+.qh:hover{background:rgba(255,255,255,.02)}
+.qnum{font-family:'Fira Code',monospace;font-size:11px;color:var(--tx-d);min-width:22px;flex-shrink:0}
+.qtxt{flex:1;font-weight:500;font-size:14.5px;color:var(--tx);line-height:1.4}
+.qbdg{display:flex;gap:5px;flex-shrink:0;align-items:center}
+.db{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;padding:2px 8px;border-radius:3px;text-transform:uppercase}
+.db-s{background:rgba(245,158,11,.13);color:var(--amb);border:1px solid rgba(245,158,11,.28)}
+.db-p{background:rgba(239,68,68,.13);color:var(--red);border:1px solid rgba(239,68,68,.28)}
+.db-d{background:rgba(168,85,247,.13);color:var(--pur);border:1px solid rgba(168,85,247,.28)}
+.mb{background:none;border:none;cursor:pointer;font-size:15px;opacity:.35;transition:opacity .2s,transform .2s;flex-shrink:0;padding:2px;line-height:1}
+.mb:hover{opacity:.8;transform:scale(1.2)}
+.qc.mastered .mb{opacity:1}
+.qtg{color:var(--tx-d);font-size:15px;transition:transform .3s ease;flex-shrink:0;line-height:1}
+.qc.open .qtg{transform:rotate(180deg)}
+.qbody{display:none;padding:0 18px 18px;border-top:1px solid var(--bdr)}
+.qc.open .qbody{display:block}
+.albl{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tx-d);margin:14px 0 10px}
+.ab{color:var(--tx);line-height:1.72}
+.ab p{margin-bottom:11px}
+.ab p:last-child{margin-bottom:0}
+.ab strong{color:var(--org-s);font-weight:600}
+.ab em{color:var(--blu-s);font-style:normal;font-weight:500}
+.ab ul,.ab ol{padding-left:20px;margin-bottom:11px}
+.ab li{margin-bottom:5px}
+.ab h4{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--blu-s);margin:14px 0 7px}
+pre{background:#0a0c15;border:1px solid var(--bdr);border-left:3px solid var(--org);border-radius:6px;padding:13px 15px;font-family:'Fira Code',monospace;font-size:12px;line-height:1.65;overflow-x:auto;margin:11px 0;color:#a8b4cc}
+.kw{color:#c792ea}.fn{color:#82aaff}.str{color:#c3e88d}.num{color:#f78c6c}.cmt{color:#546e7a;font-style:italic}.op{color:#89ddff}.cls{color:#ffcb6b}
+.tip{background:rgba(14,165,233,.06);border:1px solid rgba(14,165,233,.2);border-left:3px solid var(--blu);border-radius:6px;padding:11px 13px;margin:11px 0;font-size:13px;color:#93c5fd}
+.tip strong{color:var(--blu-s)}
+.wrn{background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);border-left:3px solid var(--amb);border-radius:6px;padding:11px 13px;margin:11px 0;font-size:13px;color:#fcd34d}
+.mg{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:9px;margin:11px 0}
+.mc{background:rgba(255,255,255,.02);border:1px solid var(--bdr);border-radius:6px;padding:9px 12px;text-align:center}
+.mc .v{font-family:'Fira Code',monospace;font-size:17px;color:var(--org);display:block;line-height:1}
+.mc .l{font-size:11px;color:var(--tx-d);margin-top:3px}
+.no-res{text-align:center;padding:60px 20px;color:var(--tx-d);font-size:15px;display:none}
+.ftr{border-top:1px solid var(--bdr);padding:28px 0;margin-top:44px;text-align:center;color:var(--tx-d);font-size:13px}
+@media(max-width:640px){.qbdg{display:none}.tabs{overflow-x:auto;flex-wrap:nowrap}.stats{gap:20px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- HEADER -->
+<header class="hdr">
+  <div class="eyebrow">⚡ Staff / Principal Engineer · $350K–$400K Target</div>
+  <h1>Spark & Databricks<br>Interview Bible</h1>
+  <p class="sub">54 Staff-level Q&As across 8 domains — depth, internals, system design, leadership</p>
+  <div class="stats">
+    <div class="stat"><span class="n">54</span><span class="l">Questions</span></div>
+    <div class="stat"><span class="n">8</span><span class="l">Categories</span></div>
+    <div class="stat"><span class="n">∞</span><span class="l">Depth</span></div>
+  </div>
+</header>
+
+<!-- PROGRESS -->
+<div class="prog-bar-section">
+  <span class="prog-lbl">Mastered</span>
+  <div class="prog-track"><div class="prog-fill" id="pf"></div></div>
+  <span class="prog-ct" id="pc">0 / 54</span>
+  <button class="btn-rst" onclick="resetAll()">Reset</button>
+</div>
+
+<!-- CONTROLS -->
+<div class="ctrl">
+  <div class="srch-wrap">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+    <input class="srch" id="si" placeholder="Search questions or answers…" oninput="search()">
+  </div>
+  <div class="tabs">
+    <button class="tab on" data-cat="all" onclick="filter('all')">All <span class="ct">54</span></button>
+    <button class="tab" data-cat="arch" onclick="filter('arch')">🔥 Architecture <span class="ct">8</span></button>
+    <button class="tab" data-cat="perf" onclick="filter('perf')">⚡ Performance <span class="ct">9</span></button>
+    <button class="tab" data-cat="delta" onclick="filter('delta')">🏔 Delta Lake <span class="ct">8</span></button>
+    <button class="tab" data-cat="stream" onclick="filter('stream')">🌊 Streaming <span class="ct">7</span></button>
+    <button class="tab" data-cat="dbx" onclick="filter('dbx')">🧱 Databricks <span class="ct">7</span></button>
+    <button class="tab" data-cat="design" onclick="filter('design')">🏗 System Design <span class="ct">5</span></button>
+    <button class="tab" data-cat="ml" onclick="filter('ml')">🤖 MLflow & ML <span class="ct">5</span></button>
+    <button class="tab" data-cat="lead" onclick="filter('lead')">🎯 Leadership <span class="ct">5</span></button>
+  </div>
+</div>
+
+<!-- ===== CATEGORY 1: SPARK ARCHITECTURE ===== -->
+<section class="cat-sec" data-cat="arch">
+  <div class="cat-hdr">
+    <span class="cat-ico">🔥</span>
+    <span class="cat-ttl" style="color:var(--cat-arch)">Spark Architecture & Internals</span>
+    <span class="cat-pill" style="color:var(--cat-arch)">8 questions</span>
+  </div>
+
+  <div class="qc" data-cat="arch" data-id="1">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">01</span>
+      <div class="qtxt">Walk me end-to-end through a Spark job from <code>df.write.save()</code> to bytes on disk — include Catalyst, Tungsten, stage boundaries, and task scheduling.</div>
+      <div class="qbdg"><span class="db db-p">Principal</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <h4>Phase 1 — Parse & Analyze</h4>
+        <p>The DataFrame API constructs an <strong>Unresolved Logical Plan</strong>. The <strong>Analyzer</strong> resolves it against the Catalog (table names → schemas, column names → types), producing a <strong>Resolved Logical Plan</strong>.</p>
+        <h4>Phase 2 — Catalyst Optimization</h4>
+        <p>A rule-based optimizer fires in fixed-point iterations: <strong>predicate pushdown</strong> (move filters to scan), <strong>column pruning</strong> (drop unused columns — critical for Parquet), <strong>constant folding</strong>, and null propagation. If CBO is enabled and stats exist, join reordering runs on top. Output: an <strong>Optimized Logical Plan</strong>.</p>
+        <h4>Phase 3 — Physical Planning</h4>
+        <p><code>SparkPlanner</code> generates multiple physical strategies and the cost model selects one. The physical plan contains concrete operators: <code>FileScanRDD</code>, <code>SortMergeJoin</code>, <code>HashAggregate</code>, etc.</p>
+        <h4>Phase 4 — Tungsten Codegen</h4>
+        <p>Whole-Stage Code Generation collapses multiple operators into a single tight Java function via Janino. This eliminates the Volcano iterator's per-row virtual function calls and operates on <code>UnsafeRow</code> binary format (no object overhead, no GC pressure).</p>
+        <h4>Phase 5 — DAG → Stages → Tasks</h4>
+        <p>The DAG Scheduler splits the physical plan into <strong>stages</strong> at shuffle (wide transformation) boundaries. Each stage is a set of <strong>tasks</strong> — one per input partition. The Task Scheduler sends tasks to executors via the Cluster Manager. Each executor deserializes the task closure, executes the codegen'd function, and writes shuffle data or final output.</p>
+        <div class="tip"><strong>Staff insight:</strong> <code>EXPLAIN EXTENDED</code> shows all 4 logical/physical plans. <code>EXPLAIN CODEGEN</code> shows generated Java. Knowing what each optimizer rule does lets you diagnose why a query is slow without guessing.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="arch" data-id="2">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">02</span>
+      <div class="qtxt">Explain Spark's unified memory model (1.6+). How does dynamic allocation between execution and storage memory work? What happens under memory pressure?</div>
+      <div class="qbdg"><span class="db db-s">Staff</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <p><strong>Pre-1.6 (StaticMemoryManager):</strong> hardcoded 60% execution / 40% storage — wasteful when one side is idle.</p>
+        <p><strong>Post-1.6 (UnifiedMemoryManager):</strong></p>
+        <ul>
+          <li><strong>Reserved memory:</strong> 300 MB (hardcoded for Spark internals)</li>
+          <li><strong>User memory:</strong> (heap − 300MB) × (1 − <code>spark.memory.fraction</code> [0.6]) — for UDFs, user data structures</li>
+          <li><strong>Spark memory region:</strong> (heap − 300MB) × 0.6 — shared between execution and storage</li>
+          <li><strong>Storage soft limit:</strong> Spark memory × <code>spark.memory.storageFraction</code> [0.5]</li>
+        </ul>
+        <p>The key behaviour: <strong>execution memory can borrow from storage</strong> by evicting cached RDD/DataFrame blocks to disk. <strong>Storage cannot evict execution memory</strong> (would cause deadlock). Under sustained pressure: cached blocks spill first → then execution spills to disk (sort/hash spill files) → finally OOM.</p>
+        <div class="tip"><strong>Staff insight:</strong> Enable off-heap (<code>spark.memory.offHeap.enabled=true</code>) for long-running streaming jobs or large-state aggregations — removes GC from the equation entirely. <code>spark.executor.memoryOverhead</code> covers JVM overhead, Python workers, and native libraries; always set it explicitly on K8s.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="arch" data-id="3">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">03</span>
+      <div class="qtxt">Explain narrow vs wide transformations and how stage boundaries map to shuffles. How would you minimize shuffles in a complex multi-join query?</div>
+      <div class="qbdg"><span class="db db-s">Staff</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <p><strong>Narrow:</strong> each output partition depends on ≤1 input partition (map, filter, union, withColumn). No network I/O; operators are pipelined within the same stage and the same task can process them all.</p>
+        <p><strong>Wide:</strong> multiple input partitions → one output partition (groupBy, join, distinct, sortBy, repartition). Triggers a <strong>shuffle</strong>: sort-based write of shuffle files to local disk → network transfer → read by the next stage. Stage boundary is created here.</p>
+        <h4>Shuffle minimization strategies</h4>
+        <ul>
+          <li><strong>Broadcast join</strong> for small tables: eliminates shuffle entirely for the small side</li>
+          <li><strong>Bucket join</strong>: pre-partition both tables on the join key + same bucket count → no shuffle at join time</li>
+          <li><strong>Predicate pushdown before joins:</strong> Catalyst does this automatically, but write explicit filters to help</li>
+          <li><strong>Use <code>reduceByKey</code>/<code>agg</code> over <code>groupByKey</code>:</strong> map-side combine halves shuffle data</li>
+          <li><strong>Pipeline multi-joins on the same key:</strong> if joining A→B→C all on <code>user_id</code>, repartition once on <code>user_id</code> first</li>
+          <li><strong>AQE shuffle coalescing:</strong> merges post-shuffle small partitions automatically (Spark 3.0+)</li>
+        </ul>
+        <div class="tip"><strong>Staff insight:</strong> Every shuffle involves disk I/O (write shuffle map files) + network + disk I/O again (read). At 10TB scale, a single unnecessary shuffle is 30–60 minutes of I/O. Treat each shuffle boundary as a budget line item to defend.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="arch" data-id="4">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">04</span>
+      <div class="qtxt">How does the Catalyst optimizer's rule-based vs cost-based optimization work? What statistics does CBO require, and when does it actually help?</div>
+      <div class="qbdg"><span class="db db-s">Staff</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <p><strong>Rule-Based Optimization (RBO):</strong> deterministic, fires in fixed-point loop until no more rules apply. Key rules: <em>PushDownPredicate</em>, <em>ColumnPruning</em>, <em>ConstantFolding</em>, <em>ReorderJoin</em> (only with CBO), <em>NullPropagation</em>, <em>BooleanSimplification</em>. Always runs regardless of statistics.</p>
+        <p><strong>Cost-Based Optimization (CBO):</strong> requires table/column statistics. Enable with <code>spark.sql.cbo.enabled=true</code> + <code>ANALYZE TABLE t COMPUTE STATISTICS FOR ALL COLUMNS</code>. CBO uses: row count, column NDV (distinct count), min/max, histogram (equi-height). Feeds into: join reordering (<code>spark.sql.cbo.joinReorder.enabled</code>), broadcast join threshold decisions, and smarter join strategy selection.</p>
+        <h4>When CBO actually helps</h4>
+        <ul>
+          <li>Multi-table joins (4+) where join order dramatically affects intermediate result size</li>
+          <li>Correlated sub-queries where selectivity matters</li>
+          <li>Star-schema patterns (fact × multiple small dimensions)</li>
+        </ul>
+        <div class="wrn"><strong>Warning:</strong> <code>ANALYZE TABLE</code> is expensive — it scans all data. Run in off-peak on production. AQE (Spark 3.x) often supersedes CBO for join decisions by using actual runtime statistics instead of estimates.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="arch" data-id="5">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">05</span>
+      <div class="qtxt">Explain all join strategies in Spark (BHJ, SMJ, SHJ, BNL, Cartesian). Walk through the decision tree Spark uses to select one, and how AQE changes it at runtime.</div>
+      <div class="qbdg"><span class="db db-p">Principal</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <ul>
+          <li><strong>Broadcast Hash Join (BHJ):</strong> small side ≤ <code>spark.sql.autoBroadcastJoinThreshold</code> (10 MB default). Driver serializes small table → sends to all executors → each executor builds in-memory hash table → probe with large side. No shuffle. O(1) probe. Best join type.</li>
+          <li><strong>Sort-Merge Join (SMJ):</strong> default for large-large equi-joins. Both sides shuffle on join key → sort → merge. O(n log n), scalable to any size, spill-safe.</li>
+          <li><strong>Shuffle Hash Join (SHJ):</strong> one side hashed into memory, no sort needed. Used when one side fits in memory but exceeds broadcast threshold. Requires <code>spark.sql.join.preferSortMergeJoin=false</code> or hint.</li>
+          <li><strong>Broadcast Nested Loop Join (BNL):</strong> fallback for non-equi joins. O(n×m). Very slow at scale.</li>
+          <li><strong>Cartesian Join:</strong> no join condition. Requires <code>spark.sql.crossJoin.enabled=true</code>.</li>
+        </ul>
+        <h4>AQE runtime changes</h4>
+        <p>AQE can <strong>upgrade SMJ → BHJ at runtime</strong> if actual post-shuffle row counts show the small side fits within <code>spark.sql.adaptive.autoBroadcastJoinThreshold</code> (256 MB default — much larger than the static 10 MB). This means a plan estimated as large-large at compile time gets upgraded to a broadcast join after the first shuffle stage completes.</p>
+        <pre><span class="cmt">-- Force join strategy with hints</span>
+<span class="kw">SELECT</span> <span class="op">/*+</span> <span class="cls">BROADCAST</span>(d) <span class="op">*/</span> f.*, d.name
+<span class="kw">FROM</span> fact f <span class="kw">JOIN</span> dim d <span class="kw">ON</span> f.id = d.id</pre>
+        <div class="tip"><strong>Staff insight:</strong> Bucket joins are the underused champion — if you join the same two large tables repeatedly on the same key, bucketing eliminates the shuffle entirely, not just at planning time. AQE helps once, bucketing helps forever.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="arch" data-id="6">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">06</span>
+      <div class="qtxt">What is Tungsten's whole-stage code generation? Why does it matter? What operations can't use it, and what's the practical impact of those exclusions?</div>
+      <div class="qbdg"><span class="db db-s">Staff</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <p><strong>Volcano iterator model problem:</strong> traditional query engines call <code>next()</code> per row per operator — thousands of virtual function calls per row, no CPU cache locality, JVM object overhead.</p>
+        <p><strong>Tungsten Phase 1 (memory):</strong> <code>UnsafeRow</code> binary format — rows stored as raw bytes (not Java objects), no serialization/deserialization, direct memory access, off-heap option to bypass GC.</p>
+        <p><strong>Tungsten Phase 2 — WSCG:</strong> the physical plan's pipeline (filter → project → hash aggregate) is compiled into a <em>single Java function</em> via Janino. One tight loop per stage, no virtual dispatch, CPU-cache-friendly, SIMD-friendly.</p>
+        <h4>Operations that fall back from WSCG</h4>
+        <ul>
+          <li><strong>Python UDFs:</strong> must serialize each row to CPython via Py4J — kills WSCG and can be 10–100× slower than equivalent SQL functions</li>
+          <li><strong>Some SortMergeJoin steps</strong> (the merge phase) use interpreted mode</li>
+          <li><strong>Broadcast Nested Loop Join</strong></li>
+          <li><strong>RDD-based operations:</strong> any code using RDD API bypasses WSCG entirely</li>
+        </ul>
+        <div class="tip"><strong>Staff insight:</strong> The single most common performance mistake at Staff level is having Python UDFs in hot paths. Every Python UDF forces a row-by-row serialize/deserialize loop between JVM and CPython. Migrate to Pandas UDFs (<code>@pandas_udf</code>) for vectorized execution, or ideally to SQL/built-in functions that stay entirely in WSCG.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="arch" data-id="7">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">07</span>
+      <div class="qtxt">Explain broadcast variables vs accumulators — internal mechanics, size limits, correctness guarantees. When does each fail in production?</div>
+      <div class="qbdg"><span class="db db-s">Staff</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <p><strong>Broadcast variables:</strong> read-only data shared to every executor once, stored in each executor's <code>BlockManager</code>. Without broadcast, a closure variable is serialized and sent with every task (N tasks = N copies). Broadcast sends once per executor.</p>
+        <ul>
+          <li>Created: <code>bc = sc.broadcast(my_dict)</code>, read in tasks: <code>bc.value</code></li>
+          <li>Practical limit: ~2–8 GB (driver must serialize + each executor must hold in memory)</li>
+          <li><strong>Failure mode:</strong> broadcast a 1 GB dict with 100 executors = 100 GB of executor storage memory consumed; combined with large task data → OOM</li>
+        </ul>
+        <p><strong>Accumulators:</strong> write-once from tasks, read from driver. Used only for metrics/counters, never for business logic.</p>
+        <ul>
+          <li>Built-in: <code>LongAccumulator</code>, <code>DoubleAccumulator</code>; custom: extend <code>AccumulatorV2</code></li>
+          <li><strong>Correctness trap:</strong> if a task is re-executed (speculation, failure retry), the accumulator increments again — over-counting. Safe to use in <code>foreach</code>/<code>foreachPartition</code> (actions), but unreliable in transformations (lazy)</li>
+        </ul>
+        <div class="tip"><strong>Staff insight:</strong> Never use accumulators for deduplication or pipeline correctness. Use them only for instrumentation (records_processed, bad_rows_skipped). For lookup optimization at scale, broadcast is the first tool, Delta Lake broadcast hash join the second, bucket join the third.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="arch" data-id="8">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">08</span>
+      <div class="qtxt">Explain speculative execution. What are the real risks in production? When would you proactively disable it?</div>
+      <div class="qbdg"><span class="db db-s">Staff</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <p><strong>Mechanism:</strong> when a task exceeds the 75th-percentile task time × 1.5 (configurable), Spark re-launches it on a different executor. First copy to finish wins; the loser is killed. Config: <code>spark.speculation=true</code>.</p>
+        <h4>Real production risks</h4>
+        <ul>
+          <li><strong>Non-idempotent sinks:</strong> duplicate writes to an external database, Kafka, or non-transactional file systems. Two tasks write the same rows = data corruption.</li>
+          <li><strong>Skewed data (wrong fix):</strong> the stragglers are slow because they have 10× more data, not because of hardware issues. Speculation just wastes double the resources on the same overloaded key.</li>
+          <li><strong>Expensive operations:</strong> a speculative copy of a 2-hour task consumes 2× cluster resources with no guarantee of being faster.</li>
+          <li><strong>GC-heavy tasks:</strong> speculation re-runs a task that's slow due to GC; the new copy hits the same GC on the same JVM generation — no improvement.</li>
+        </ul>
+        <h4>When to disable</h4>
+        <ul>
+          <li>Streaming jobs (Structured Streaming manages its own exactly-once)</li>
+          <li>Any job with external writes (DB upserts, REST API calls)</li>
+          <li>Jobs diagnosed as data-skew problems (fix skew instead)</li>
+          <li>ML training tasks (non-idempotent gradient updates)</li>
+        </ul>
+        <div class="tip"><strong>Staff insight:</strong> Speculation is only appropriate for truly idempotent, stateless tasks on homogeneous hardware. The most productive use of speculation tuning time is usually eliminating the root cause (skew, GC, I/O bottleneck) instead.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CATEGORY 2: PERFORMANCE TUNING ===== -->
+<section class="cat-sec" data-cat="perf">
+  <div class="cat-hdr">
+    <span class="cat-ico">⚡</span>
+    <span class="cat-ttl" style="color:var(--cat-perf)">Performance Tuning & Optimization</span>
+    <span class="cat-pill" style="color:var(--cat-perf)">9 questions</span>
+  </div>
+
+  <div class="qc" data-cat="perf" data-id="1">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">09</span>
+      <div class="qtxt">A Spark job runs 4 hours against a 30-minute SLA. Walk me through your complete, tool-by-tool diagnostic and optimization workflow.</div>
+      <div class="qbdg"><span class="db db-p">Principal</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <h4>Step 1 — Spark UI triage</h4>
+        <ul>
+          <li><strong>DAG tab:</strong> identify longest stage and its shuffle read/write volumes</li>
+          <li><strong>Stage detail:</strong> look at task distribution — is the 95th-percentile task 10× the median? → data skew</li>
+          <li><strong>Executor tab:</strong> GC time / task time &gt; 10% → memory bottleneck; shuffle read/write bytes → I/O bound</li>
+          <li><strong>SQL tab:</strong> find largest operators in the physical plan (scan, exchange, sort)</li>
+        </ul>
+        <h4>Step 2 — Categorize the bottleneck</h4>
+        <ul>
+          <li><strong>Skewed tasks</strong> (one task 50× longer): → salting, AQE skew join, or broadcast</li>
+          <li><strong>High GC (&gt;15% task time):</strong> → executor memory, G1GC, off-heap, Kryo serializer</li>
+          <li><strong>Shuffle bottleneck</strong> (TB of shuffle read): → broadcast join, bucket join, or pre-aggregate</li>
+          <li><strong>Too many small tasks</strong> (10,000 tasks × 1 MB each): → AQE coalescing, increase shuffle partitions target</li>
+          <li><strong>Stage with 1 task:</strong> → only one partition after filter → coalesce/repartition before this stage</li>
+          <li><strong>I/O bound (slow scan):</strong> → verify Parquet file sizes (target 128–512 MB), enable predicate pushdown, use Z-Order / partition pruning</li>
+        </ul>
+        <h4>Step 3 — Configuration quick wins</h4>
+        <ul>
+          <li><code>spark.sql.shuffle.partitions</code>: default 200, tune to data_size_bytes / 200_MB</li>
+          <li><code>spark.sql.adaptive.enabled=true</code> (auto-coalesce, runtime join upgrade)</li>
+          <li>Executor sizing: 4–5 cores × enough memory for ~128 MB/core + 20% overhead</li>
+        </ul>
+        <h4>Step 4 — Code review</h4>
+        <ul>
+          <li>Python UDFs in hot paths → replace with SQL functions or Pandas UDFs</li>
+          <li>Multiple independent groupBys → single pass with <code>agg()</code></li>
+          <li>Hidden cartesian joins (missing join condition)</li>
+          <li>Reading full table when only 5% of rows needed → push filter before join</li>
+        </ul>
+        <div class="tip"><strong>Staff insight:</strong> The 4-hour job almost always has one dominant bottleneck — fix that first, measure again. Trying to fix everything simultaneously makes it impossible to attribute improvement.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="perf" data-id="2">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">10</span>
+      <div class="qtxt">Data skew is destroying your aggregation job. Give me 5 distinct mitigation strategies with their trade-offs. Include the salting pattern in code.</div>
+      <div class="qbdg"><span class="db db-p">Principal</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <ul>
+          <li><strong>1. Salting (manual):</strong> add random salt prefix to skewed key, distribute, aggregate twice. Universal, works for any operation. Cost: 2× aggregation passes, logic complexity.</li>
+          <li><strong>2. AQE Skew Join Optimization:</strong> <code>spark.sql.adaptive.skewJoin.enabled=true</code> — AQE splits skewed partitions and duplicates matching smaller side partitions. Zero code change. Only helps joins, not standalone aggregations.</li>
+          <li><strong>3. Broadcast Join:</strong> if one join side is small enough (&lt;256 MB with AQE), broadcast it — skew is irrelevant because there's no shuffle. Best fix when applicable.</li>
+          <li><strong>4. Two-stage aggregation (map-side pre-aggregate):</strong> use <code>reduceByKey</code> (not <code>groupByKey</code>) or SQL's <code>agg()</code> which does partial aggregation before shuffle. Halves shuffle data for commutative operations.</li>
+          <li><strong>5. Bucket tables:</strong> for repeated joins on the same skewed key, pre-bucket both tables at write time — the join reads pre-partitioned data with no runtime shuffle at all.</li>
+        </ul>
+        <pre><span class="cmt"># Salting pattern for a skewed aggregation</span>
+<span class="kw">from</span> pyspark.sql <span class="kw">import</span> functions <span class="kw">as</span> F
+
+SALT = <span class="num">20</span>  <span class="cmt"># tune based on skew factor</span>
+
+df_salted = df<span class="op">.</span><span class="fn">withColumn</span>(<span class="str">"salt"</span>, (F<span class="op">.</span><span class="fn">rand</span>() * SALT)<span class="op">.</span><span class="fn">cast</span>(<span class="str">"int"</span>)) \
+              <span class="op">.</span><span class="fn">withColumn</span>(<span class="str">"sk"</span>, F<span class="op">.</span><span class="fn">concat_ws</span>(<span class="str">"_"</span>, <span class="str">"skewed_key"</span>, <span class="str">"salt"</span>))
+
+partial = df_salted<span class="op">.</span><span class="fn">groupBy</span>(<span class="str">"sk"</span>, <span class="str">"skewed_key"</span>) \
+                   <span class="op">.</span><span class="fn">agg</span>(F<span class="op">.</span><span class="fn">sum</span>(<span class="str">"amount"</span>)<span class="op">.</span><span class="fn">alias</span>(<span class="str">"partial_sum"</span>))
+
+result = partial<span class="op">.</span><span class="fn">groupBy</span>(<span class="str">"skewed_key"</span>) \
+                <span class="op">.</span><span class="fn">agg</span>(F<span class="op">.</span><span class="fn">sum</span>(<span class="str">"partial_sum"</span>)<span class="op">.</span><span class="fn">alias</span>(<span class="str">"total"</span>))</pre>
+        <div class="tip"><strong>Staff insight:</strong> Diagnose before you salt. Check Spark UI task distribution — if max task time = 1000× median, that's skew. If max = 3×, it's something else (GC, I/O). Salting with SALT=20 on a non-skewed dataset adds 20% overhead for no gain.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="perf" data-id="3">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">11</span>
+      <div class="qtxt">What exactly does AQE solve? Explain its 3 core optimizations, when it fires, and what its real limitations are.</div>
+      <div class="qbdg"><span class="db db-s">Staff</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <p>AQE (<code>spark.sql.adaptive.enabled=true</code>, default in Spark 3.2+) re-optimizes the query plan after each shuffle stage using actual runtime statistics instead of estimates.</p>
+        <h4>3 core optimizations</h4>
+        <ul>
+          <li><strong>1. Dynamic shuffle partition coalescing:</strong> post-shuffle, merges many small output partitions into larger ones. Prevents 10,000 tasks of 1 KB each from the default <code>spark.sql.shuffle.partitions=200</code> when actual data is small. Config: <code>spark.sql.adaptive.coalescePartitions.enabled</code>.</li>
+          <li><strong>2. Runtime SMJ → BHJ upgrade:</strong> if actual runtime row count of one join side fits within <code>spark.sql.adaptive.autoBroadcastJoinThreshold</code> (256 MB), Spark promotes the plan from sort-merge to broadcast join mid-execution — after the first shuffle stage materialized the actual size.</li>
+          <li><strong>3. Skew join optimization:</strong> detects skewed partitions (partitions significantly larger than median) and splits them, duplicating the matching smaller side. Config: <code>spark.sql.adaptive.skewJoin.enabled</code>.</li>
+        </ul>
+        <h4>Limitations</h4>
+        <ul>
+          <li>Requires at least one shuffle stage to fire (needs materialized stats)</li>
+          <li>Cannot optimize streaming queries</li>
+          <li>Adds minor query planning overhead for simple queries</li>
+          <li>Can't fix fundamentally bad query structure (e.g., reading the wrong table entirely)</li>
+          <li>Statistics are per-shuffle-stage — if a plan has no shuffles, AQE has nothing to work with</li>
+        </ul>
+        <div class="tip"><strong>Staff insight:</strong> AQE doesn't replace understanding your data — it's a safety net that catches common plan mistakes. For tables with known statistics and predictable access patterns (e.g., production Delta tables), CBO + bucket joins still beats AQE on latency because there's no shuffle stage to wait for before optimization kicks in.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="perf" data-id="4">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">12</span>
+      <div class="qtxt">Differences between <code>repartition()</code>, <code>coalesce()</code>, and <code>partitionBy()</code>. When does each cause a shuffle? How do you choose partition count?</div>
+      <div class="qbdg"><span class="db db-s">Staff</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <ul>
+          <li><strong><code>repartition(n)</code>:</strong> full shuffle, always creates exactly n balanced partitions. Use when increasing partition count, balancing skewed data, or pre-partitioning on a join key. Cost: full shuffle.</li>
+          <li><strong><code>coalesce(n)</code>:</strong> narrow transformation — merges adjacent partitions without a full shuffle (when reducing). Much cheaper than <code>repartition</code> for reducing partition count. Risk: can create imbalanced partitions if some partitions are large. Never use to increase partition count — falls back to a full shuffle.</li>
+          <li><strong><code>partitionBy("col")</code>:</strong> DataFrameWriter option, creates directory-partitioned output (<code>col=value/</code> subdirectories). Not an in-memory repartition. Triggers a shuffle to group data by the partition column before writing. Enables partition pruning for downstream readers.</li>
+        </ul>
+        <h4>Partition count sizing</h4>
+        <div class="mg">
+          <div class="mc"><span class="v">128–256 MB</span><span class="l">Target per partition</span></div>
+          <div class="mc"><span class="v">2–3×</span><span class="l">Cores → parallelism</span></div>
+          <div class="mc"><span class="v">200</span><span class="l">Default shuffle partitions</span></div>
+        </div>
+        <p>Formula: <code>shuffle_partitions = data_size_bytes / (target_partition_bytes)</code>. For a 400 GB shuffle with 200 MB target → 2,000 shuffle partitions. AQE will coalesce small ones back automatically.</p>
+        <div class="tip"><strong>Staff insight:</strong> After a heavy filter that drops 90% of rows, always <code>coalesce()</code> before writing — otherwise you write thousands of tiny files. <code>repartition(n, "join_key")</code> pre-partitions on a column, which can eliminate the shuffle in a subsequent join on the same key (shuffle-free join when both DataFrames have same partition count and key).</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="perf" data-id="5">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">13</span>
+      <div class="qtxt">Explain Parquet column pruning, row-group filtering, and dictionary encoding. How does each interact with Spark's execution engine to reduce I/O?</div>
+      <div class="qbdg"><span class="db db-s">Staff</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <p><strong>Parquet structure:</strong> File → Row Groups (128 MB default) → Column Chunks → Pages (1 MB). Each column chunk stores its data separately — columnar on disk.</p>
+        <ul>
+          <li><strong>Column pruning:</strong> Catalyst propagates required columns to <code>FileScanRDD</code>. Parquet reader opens only the column chunks for requested columns. On a 200-column table where a query uses 5 columns → reads ~2.5% of the raw data. Verify with <code>EXPLAIN</code> — look for <code>PushedFilters</code> and column list in <code>FileScan</code>.</li>
+          <li><strong>Row group filtering (data skipping):</strong> each row group stores min/max statistics per column. Spark pushes predicates to the Parquet reader, which skips entire row groups where predicate cannot be satisfied. A query <code>WHERE date = '2024-01-15'</code> on a time-sorted table might read &lt;1% of row groups.</li>
+          <li><strong>Dictionary encoding:</strong> for the first ~1 MB of a column chunk (while distinct count is low), Parquet stores values in a dictionary and encodes indices. Spark can apply dictionary filters (equality, in-list) directly on indices without decompressing — extremely fast for low-cardinality columns like status codes or country codes.</li>
+          <li><strong>Bloom filters (optional):</strong> probabilistic data structure per column chunk. Enable with <code>parquet.bloom.filter.enabled=true</code>. Excellent for high-cardinality point lookups (UUID, event_id). Only helps equality predicates.</li>
+        </ul>
+        <div class="tip"><strong>Staff insight:</strong> The biggest lever is writing Parquet sorted by your primary query key — tight min/max ranges per row group maximize skipping. Z-Order in Delta achieves multi-column version of this. Never use CSV in production at scale — zero column pruning, zero row-group filtering, zero dictionary encoding.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="perf" data-id="6">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">14</span>
+      <div class="qtxt">You have a 500 GB join between a fact table and a 2 GB dimension. AQE is on, but Spark still chooses a sort-merge join. Name 4 reasons why and how to fix each.</div>
+      <div class="qbdg"><span class="db db-s">Staff</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <ul>
+          <li><strong>Reason 1 — 2 GB &gt; AQE broadcast threshold (default 256 MB):</strong> AQE's <code>autoBroadcastJoinThreshold</code> defaults to 256 MB. Fix: <code>spark.conf.set("spark.sql.adaptive.autoBroadcastJoinThreshold", "3g")</code> or use explicit hint: <code>df.hint("broadcast")</code>.</li>
+          <li><strong>Reason 2 — 2 GB on disk ≠ 2 GB in memory:</strong> Snappy-compressed Parquet 2 GB might deserialize to 10–15 GB in memory. Driver must serialize + send the entire in-memory form. Check: <code>spark.sql.autoBroadcastJoinThreshold</code> is measured against the estimated in-memory size, not file size.</li>
+          <li><strong>Reason 3 — AQE hasn't materialized stats yet:</strong> AQE upgrades the plan after the first shuffle stage completes. If no shuffle has run yet (fresh scan), AQE uses compile-time estimates which may underestimate the dimension size. Fix: analyze the table first or use explicit hint.</li>
+          <li><strong>Reason 4 — Memory capacity:</strong> broadcasting 2 GB to 100 executors = 200 GB of executor storage memory. If executors are small, they'll OOM. The correct solution may be a <strong>bucket join</strong> — pre-partition both tables on the join key at write time, eliminating the shuffle without the memory cost of broadcast.</li>
+        </ul>
+        <div class="tip"><strong>Staff insight:</strong> The 256 MB default AQE broadcast threshold is conservative for good reason. Before raising it, calculate: threshold × executor_count must fit in aggregate executor storage memory. For a 2 GB dimension with 50 executors, you need 100 GB available. A bucket join is usually the better answer for repeated joins on the same key.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="perf" data-id="7">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">15</span>
+      <div class="qtxt">What Spark UI signals tell you a job is bottlenecked by GC vs shuffle vs serialization? How do you tune each?</div>
+      <div class="qbdg"><span class="db db-s">Staff</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <h4>GC bottleneck signals</h4>
+        <ul>
+          <li>Executor tab: GC Time / Task Time &gt; 10% concerning, &gt; 20% critical</li>
+          <li>Stage timeline: long flat sections per task (GC stop-the-world)</li>
+          <li>OOM errors: <code>GC overhead limit exceeded</code></li>
+          <li><strong>Fix:</strong> increase executor memory, switch to G1GC (<code>-XX:+UseG1GC</code>), enable off-heap, use Kryo serializer, avoid MEMORY_ONLY cache (use MEMORY_AND_DISK_SER)</li>
+        </ul>
+        <h4>Shuffle bottleneck signals</h4>
+        <ul>
+          <li>Stage detail: large "Shuffle Write" and "Shuffle Read" sizes (TB range)</li>
+          <li>Many tasks in shuffle read stage with high network I/O</li>
+          <li>Slow stages right after wide transformations</li>
+          <li><strong>Fix:</strong> broadcast join, bucket join, pre-aggregate before shuffle, increase shuffle parallelism, use shuffle service</li>
+        </ul>
+        <h4>Serialization bottleneck signals</h4>
+        <ul>
+          <li>High task deserialization time in stage details</li>
+          <li>Large task sizes (MB per task) visible in Task tab</li>
+          <li>Slow when using RDD API with complex Java/Scala objects</li>
+          <li><strong>Fix:</strong> switch from Java serializer to Kryo (<code>spark.serializer=org.apache.spark.serializer.KryoSerializer</code>), register classes with Kryo for 10× speed improvement, move to DataFrame API (no serialization overhead)</li>
+        </ul>
+        <div class="tip"><strong>Staff insight:</strong> Databricks Ganglia metrics (CPU, memory, network, disk I/O) correlated with Spark UI stage timelines give you a precise bottleneck fingerprint. GC = high CPU with zero useful work; shuffle = high network + disk I/O; serialization = high CPU + large task sizes.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="perf" data-id="8">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">16</span>
+      <div class="qtxt">Explain dynamic resource allocation. What are its 3 biggest production pitfalls and how do you mitigate them?</div>
+      <div class="qbdg"><span class="db db-s">Staff</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <p><strong>DRA</strong> (<code>spark.dynamicAllocation.enabled=true</code>) scales executors up/down based on pending task backlog. Requires external shuffle service (<code>spark.shuffle.service.enabled=true</code>) to preserve shuffle files when executors are removed.</p>
+        <h4>3 biggest pitfalls</h4>
+        <ul>
+          <li><strong>1. Shuffle data loss without external shuffle service:</strong> if an idle executor is removed and the shuffle service is not running, its shuffle map files are lost → downstream stage fails → entire job retries from the failed stage. On YARN always enable the shuffle service. On K8s, use Remote Shuffle Service or Spark's own shuffle file server (<code>spark.shuffle.push.enabled</code>).</li>
+          <li><strong>2. Pod startup latency on K8s:</strong> requesting 50 executors from K8s can take 2–5 minutes per pod (image pull, scheduler, node capacity). By the time executors arrive, the stage may have completed with fewer executors. Mitigation: pre-allocate minimum executors (<code>spark.dynamicAllocation.initialExecutors</code>), use instance pools in Databricks to reduce startup to seconds.</li>
+          <li><strong>3. Streaming incompatibility:</strong> Structured Streaming manages its own micro-batch resources. DRA can conflict with the streaming model — enabling DRA on a streaming job can cause executors to be removed mid-batch. Disable DRA for all streaming jobs; streaming handles parallelism via Kafka partition count.</li>
+        </ul>
+        <div class="tip"><strong>Staff insight:</strong> DRA shines for interactive notebooks and variable batch workloads. Always set <code>maxExecutors</code> to control maximum spend, and set <code>executorIdleTimeout</code> aggressively (60s) for dev/test clusters and conservatively (600s) for production ETL to avoid the startup cost overhead.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="perf" data-id="9">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">17</span>
+      <div class="qtxt">What is dynamic partition pruning (DPP)? How does it differ from static partition pruning, and what are the conditions for it to activate?</div>
+      <div class="qbdg"><span class="db db-s">Staff</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <p><strong>Static partition pruning:</strong> the optimizer knows at query planning time which partitions to skip because the filter is a literal: <code>WHERE date = '2024-01-01'</code> → skip all other date partitions. Happens before execution starts.</p>
+        <p><strong>Dynamic partition pruning (DPP, Spark 3.0+):</strong> the filter value is unknown at planning time because it comes from another table (a dimension table join). DPP runs the dimension scan first, extracts the distinct values for the join key, then broadcasts them as a runtime filter to prune the fact table scan.</p>
+        <h4>Conditions for DPP to activate</h4>
+        <ul>
+          <li>The fact table is <strong>partitioned on the join key</strong> — otherwise there's nothing to prune</li>
+          <li>The dimension side is small enough to <strong>broadcast</strong> (the runtime filter is a broadcast)</li>
+          <li><code>spark.sql.optimizer.dynamicPartitionPruning.enabled=true</code> (default true in Spark 3.x)</li>
+          <li>The join is an equi-join on the partition column</li>
+        </ul>
+        <p>DPP can reduce fact table scan from 100% to 2–5% for a typical date-range dimension query on a partitioned fact table — the single biggest I/O win for star-schema patterns.</p>
+        <div class="tip"><strong>Staff insight:</strong> DPP is why you should always partition your large fact tables by the most common filter dimension (usually date). Without partitioning, DPP has nothing to prune — it degrades to a full scan with a bloom filter at best. Design your Delta Lake partition strategy with DPP in mind.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CATEGORY 3: DELTA LAKE ===== -->
+<section class="cat-sec" data-cat="delta">
+  <div class="cat-hdr">
+    <span class="cat-ico">🏔</span>
+    <span class="cat-ttl" style="color:var(--cat-delta)">Delta Lake Deep Dive</span>
+    <span class="cat-pill" style="color:var(--cat-delta)">8 questions</span>
+  </div>
+
+  <div class="qc" data-cat="delta" data-id="1">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">18</span>
+      <div class="qtxt">Explain Delta Lake's transaction log architecture in detail. How does ACID compliance work? What is the checkpoint mechanism and why does it exist?</div>
+      <div class="qbdg"><span class="db db-p">Principal</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <p>Delta stores all transactions in <code>_delta_log/</code> as sequential JSON files (<code>0000.json</code>, <code>0001.json</code>, …). Each JSON = one commit = a list of actions: <strong>AddFile</strong> (new data file + stats), <strong>RemoveFile</strong> (logical delete), <strong>Metadata</strong> (schema, partitioning), <strong>Protocol</strong> (reader/writer version), <strong>CommitInfo</strong> (who/when/operation).</p>
+        <h4>ACID properties</h4>
+        <ul>
+          <li><strong>Atomicity:</strong> commit is atomic via conditional write (S3 put-if-absent, ADLS ETag) or rename-atomic (HDFS). Either the JSON file appears fully or not at all.</li>
+          <li><strong>Consistency:</strong> schema enforcement, constraint checks evaluated before commit.</li>
+          <li><strong>Isolation:</strong> Optimistic Concurrency Control (OCC). Writer reads current version, applies changes, attempts to commit at version N+1. If another writer committed N+1 first → conflict detection: if changes are on disjoint files → merge ok; if same files → retry or fail.</li>
+          <li><strong>Durability:</strong> JSON log files are immutable and durable in object storage.</li>
+        </ul>
+        <h4>Checkpoint mechanism</h4>
+        <p>Every 10 commits (default), Delta writes a Parquet checkpoint summarizing all net AddFile / RemoveFile actions up to that version. Without checkpoints, reading table state at version 10,000 requires replaying 10,000 JSON files — O(n) I/O. With checkpoints: load latest checkpoint (O(1) Parquet read) + apply only subsequent JSON commits (O(10) at most). The <code>_delta_log/_last_checkpoint</code> file points to the latest checkpoint.</p>
+        <div class="tip"><strong>Staff insight:</strong> Very high-write-frequency tables (1,000+ commits/day) create _delta_log pressure. Increase checkpoint frequency or run Delta table OPTIMIZE regularly. The _delta_log itself never gets compacted by OPTIMIZE — only data files do. Excessive log files → slow table reads → monitor log file count.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="delta" data-id="2">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">19</span>
+      <div class="qtxt">Explain Z-Ordering. How does the space-filling curve create multi-dimensional data skipping? How does it differ from Hive-style partitioning?</div>
+      <div class="qbdg"><span class="db db-s">Staff</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <p><strong>Z-Order</strong> (Morton curve) maps multi-dimensional coordinates to a 1D value that preserves multi-dimensional locality — points close in N-dimensional space are close on the 1D curve. Delta's <code>OPTIMIZE ... ZORDER BY (col1, col2)</code> rewrites data files so rows with similar values across all Z-Order columns are co-located in the same files.</p>
+        <h4>Data skipping mechanism</h4>
+        <p>Delta stores per-file min/max statistics for each column. Z-ordering tightens these ranges dramatically. A file Z-ordered on (date, city) will contain rows within a narrow (date, city) band → a query <code>WHERE date = '2024-01' AND city = 'NYC'</code> skips ~99% of files because their (date_min, date_max, city_min, city_max) stats exclude the predicate.</p>
+        <h4>Z-Order vs Hive partitioning</h4>
+        <ul>
+          <li><strong>Partitioning:</strong> creates directory structure per distinct value. Works perfectly for low-cardinality, dominant filter columns (date, country). Fails for high-cardinality columns (user_id → millions of tiny partitions). Only one "primary" column is effective.</li>
+          <li><strong>Z-Order:</strong> multi-column, high-cardinality safe, no directory explosion. Improves skipping for 2–4 columns simultaneously. Does NOT create partition directories — all in one partition. Static: must re-run OPTIMIZE as new data arrives.</li>
+        </ul>
+        <div class="tip"><strong>Staff insight:</strong> Rule of thumb — partition by date/region for coarse granularity (&lt;10K distinct values, dominant filter), then Z-Order within each partition on the next 2–3 query dimensions. Never partition on a high-cardinality column — you'll create the small file problem that OPTIMIZE is designed to solve.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="delta" data-id="3">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">20</span>
+      <div class="qtxt">What is Liquid Clustering (Delta 3.0+)? How does it fundamentally differ from Z-Ordering, and when do you choose each?</div>
+      <div class="qbdg"><span class="db db-s">Staff</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <p><strong>Z-Order problem:</strong> static optimization. You must run <code>OPTIMIZE ... ZORDER BY</code> explicitly. On an actively-written table (streaming inserts, daily loads), new files are unclustered immediately after OPTIMIZE. The full-rewrite is expensive and the benefit degrades with every new write.</p>
+        <p><strong>Liquid Clustering</strong> (<code>CLUSTER BY (col1, col2)</code> at table creation, DBR 13.3+): uses the same locality concept as Z-Order but implements incremental clustering.</p>
+        <h4>Key differences</h4>
+        <ul>
+          <li><strong>Incremental OPTIMIZE:</strong> only rewrites unclustered files (new data since last OPTIMIZE). Runs faster, lower cost per execution.</li>
+          <li><strong>No partition column required:</strong> Liquid Clustering replaces partitioning entirely — you define clustering columns, not partition columns. No directory explosion for high-cardinality keys.</li>
+          <li><strong>Dynamic:</strong> as query patterns change, you can <code>ALTER TABLE CLUSTER BY (new_cols)</code> — next OPTIMIZE re-clusters progressively</li>
+          <li><strong>Better for streaming tables:</strong> incremental cost makes it feasible to OPTIMIZE after each micro-batch</li>
+        </ul>
+        <h4>When to choose</h4>
+        <ul>
+          <li><strong>Z-Order:</strong> older Delta versions (&lt;3.0), OSS Delta without Databricks, tables read by third-party engines, stable write patterns with infrequent full OPTIMIZE</li>
+          <li><strong>Liquid Clustering:</strong> new Databricks managed tables, actively written tables (streaming/CDC), high-cardinality clustering columns, tables where clustering columns may evolve</li>
+        </ul>
+        <div class="tip"><strong>Staff insight:</strong> Liquid Clustering is the future direction for Databricks. On net-new tables in Databricks Runtime 13.3+, default to Liquid Clustering. Migrate existing Z-Ordered tables when the OPTIMIZE overhead becomes operationally painful.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="delta" data-id="4">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">21</span>
+      <div class="qtxt">How does Delta Lake's MERGE (upsert) work internally? What are the performance pitfalls at scale and how do you fix them?</div>
+      <div class="qbdg"><span class="db db-s">Staff</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <p><strong>Internal execution:</strong> Delta MERGE is compiled to a join between source and target on the merge condition. For MATCHED rows: UPDATE/DELETE. For NOT MATCHED: INSERT. Copy-on-write (CoW) rewrites every touched Parquet file entirely, even if only 1 row changed.</p>
+        <h4>Performance pitfalls</h4>
+        <ul>
+          <li><strong>Full table rewrite:</strong> without proper file pruning, MERGE reads and rewrites ALL target files. On a 10 TB table with 1,000 changed rows, that's catastrophic.</li>
+          <li><strong>Cartesian-like joins:</strong> if merge condition doesn't include partition columns, Delta can't prune files → full scan</li>
+          <li><strong>Skewed source:</strong> source DataFrame with hot keys → skewed join → tasks straggling</li>
+        </ul>
+        <h4>Optimization strategies</h4>
+        <ul>
+          <li><strong>Include partition column in merge condition:</strong> <code>target.date = source.date AND target.id = source.id</code> → Delta prunes to only files in matching partitions</li>
+          <li><strong>Low-shuffle merge</strong> (Databricks): <code>spark.databricks.delta.merge.enableLowShuffle=true</code> — only reads files that actually contain matching rows, skips rest</li>
+          <li><strong>Deletion vectors:</strong> for delete-heavy MERGE, DVs avoid rewriting entire files — just mark deleted rows in a bitmap</li>
+          <li><strong>Broadcast source:</strong> if source is small (&lt;256 MB), it gets broadcast; join skips shuffle entirely</li>
+          <li><strong>Repartition source on merge key</strong> before MERGE to co-locate join keys</li>
+        </ul>
+        <div class="tip"><strong>Staff insight:</strong> The combination of low-shuffle MERGE + deletion vectors + partition-aware merge condition can reduce a 30-minute MERGE to under 2 minutes on large CDC tables. Profile the MERGE plan with EXPLAIN to see if file pruning is actually happening before optimizing further.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="delta" data-id="5">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">22</span>
+      <div class="qtxt">What is Change Data Feed (CDF) in Delta Lake? How does it work internally? Give a real production use case.</div>
+      <div class="qbdg"><span class="db db-s">Staff</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <p>Enable: <code>ALTER TABLE t SET TBLPROPERTIES ('delta.enableChangeDataFeed' = 'true')</code>. From this point, every write also produces change records in a <code>_change_data/</code> subdirectory.</p>
+        <h4>Internal mechanics</h4>
+        <p>Each row in the CDC feed carries: <code>_change_type</code> (insert / update_preimage / update_postimage / delete), <code>_commit_version</code>, <code>_commit_timestamp</code>. UPDATEs produce two rows: the before-image and after-image. These are lightweight Parquet files written alongside data files — zero read overhead for queries that don't request CDF.</p>
+        <pre><span class="cmt"># Read changes since version 10</span>
+spark.read.format(<span class="str">"delta"</span>) \
+  .option(<span class="str">"readChangeFeed"</span>, <span class="str">"true"</span>) \
+  .option(<span class="str">"startingVersion"</span>, <span class="num">10</span>) \
+  .table(<span class="str">"orders"</span>)</pre>
+        <h4>Production use case — incremental Silver layer</h4>
+        <p>Bronze table receives full CDC from Kafka. Silver job runs every 5 minutes, reads only CDF from Bronze since last watermark version → applies only deltas to Silver via MERGE. Without CDF: Silver job must full-scan Bronze every run (expensive). With CDF: Silver job reads &lt;1% of data — only rows that changed.</p>
+        <div class="tip"><strong>Staff insight:</strong> CDF is also essential for downstream propagation in a lakehouse — when Bronze changes, you can stream only the changed rows to Silver and Gold rather than reprocessing the full table. Combine CDF with Structured Streaming (<code>readStream.format("delta").option("readChangeFeed","true")</code>) for continuous propagation.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="delta" data-id="6">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">23</span>
+      <div class="qtxt">What are deletion vectors (DVs)? How do they change the write amplification profile of DML operations?</div>
+      <div class="qbdg"><span class="db db-s">Staff</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <p><strong>Pre-DVs (copy-on-write):</strong> DELETE / UPDATE must rewrite the entire Parquet file even when changing a single row. A 1 GB file with 1 deleted row → write 1 GB of new data. Write amplification = file size / bytes actually changed. At scale: catastrophic for GDPR right-to-erasure workloads (delete by user_id).</p>
+        <p><strong>Deletion vectors:</strong> a compact bitmap (Roaring Bitmap format) stored as a separate tiny file pointing to row offsets within the Parquet file that are "deleted." The Parquet file itself is not rewritten. A DV for 100 deleted rows in a 1 GB file is &lt;1 KB.</p>
+        <h4>Read-time impact</h4>
+        <p>When reading, Spark applies the DV mask to filter out deleted rows. Adds a small per-row bitset lookup — negligible vs I/O cost. Enable: <code>ALTER TABLE t SET TBLPROPERTIES ('delta.enableDeletionVectors' = 'true')</code>.</p>
+        <h4>Eventual compaction</h4>
+        <p>DVs accumulate over time. OPTIMIZE merges DV-marked deletes into clean new Parquet files, improving long-term read performance. Until OPTIMIZE runs, reads pay a small DV mask overhead per file.</p>
+        <div class="tip"><strong>Staff insight:</strong> DVs are the correct solution for GDPR/right-to-erasure pipelines — you can delete millions of user records as bitmap operations without touching the 99.9% of data that didn't change. Schedule OPTIMIZE weekly to compact accumulated DVs. Also critical for high-frequency streaming upsert patterns.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="delta" data-id="7">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">24</span>
+      <div class="qtxt">Explain OPTIMIZE and VACUUM. What is the interaction between them for time travel? What are the risks of aggressive VACUUM?</div>
+      <div class="qbdg"><span class="db db-s">Staff</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <p><strong>OPTIMIZE:</strong> reads many small Parquet files, rewrites them into fewer large files (~1 GB target). Writes new AddFile entries + RemoveFile entries for old files to <code>_delta_log</code>. The old Parquet files remain on disk — OPTIMIZE does NOT delete anything. This is why OPTIMIZE is safe to run at any time.</p>
+        <p><strong>VACUUM:</strong> physically deletes Parquet files that have been logically removed (RemoveFile) AND are older than the retention threshold (default 7 days). <code>VACUUM mytable RETAIN 168 HOURS</code>.</p>
+        <h4>Time travel interaction</h4>
+        <p>Time travel reads old versions by replaying the log up to that version and reading the AddFile paths from that version. If VACUUM deleted those Parquet files, time travel to that version fails with <code>FileNotFoundException</code>.</p>
+        <h4>Risks of aggressive VACUUM</h4>
+        <ul>
+          <li><strong>Broken time travel</strong> for business or regulatory queries</li>
+          <li><strong>Active reader failure:</strong> a long-running query reading an old snapshot might reference files that VACUUM just deleted mid-query</li>
+          <li><strong>RESTORE impossibility:</strong> can't restore a table to a vacuumed version</li>
+          <li><strong>Compliance violations:</strong> audit trails requiring 90-day history require 90-day retention</li>
+        </ul>
+        <div class="tip"><strong>Staff insight:</strong> Never set VACUUM retention below 7 days (Delta checks this by default). In streaming pipelines: ensure all active streaming checkpoints reference a version younger than the VACUUM retention — a lagging stream can be broken by VACUUM. For compliance tables, set retention = your audit window (30, 60, or 90 days).</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="delta" data-id="8">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">25</span>
+      <div class="qtxt">How does Delta Lake handle schema evolution and enforcement? Explain all evolution modes and when each is appropriate.</div>
+      <div class="qbdg"><span class="db db-s">Staff</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <p><strong>Default (strict enforcement):</strong> writing a DataFrame with a schema that doesn't match the table schema throws <code>AnalysisException</code>. Protects against accidental schema changes.</p>
+        <ul>
+          <li><strong><code>mergeSchema=true</code>:</strong> <code>df.write.option("mergeSchema","true")</code> — adds new columns present in the DataFrame but not in the table. Widens compatible types (int→long, float→double). Does NOT remove existing columns. Safe for additive schema changes.</li>
+          <li><strong><code>overwriteSchema=true</code>:</strong> completely replaces table schema with DataFrame schema. Requires OVERWRITE mode. Irreversible — use only for intentional schema redesigns.</li>
+          <li><strong>DLT rescue mode:</strong> <code>spark.databricks.delta.schema.autoMerge.enabled=true</code> for streaming — unexpected columns land in a <code>_rescued_data</code> JSON column rather than failing the write. Invaluable for semi-structured sources (API payloads that add fields without notice).</li>
+        </ul>
+        <h4>Compatible vs incompatible type changes</h4>
+        <ul>
+          <li>Compatible (mergeSchema handles): int→long, float→double, date→timestamp</li>
+          <li>Incompatible (require overwriteSchema or migration): string→int, long→int, any narrowing</li>
+        </ul>
+        <div class="tip"><strong>Staff insight:</strong> In production pipelines, strict schema enforcement is your friend — it catches upstream changes before they corrupt your Gold tables. The correct workflow for a planned schema change: (1) update the pipeline to write the new schema, (2) use mergeSchema for additive changes or coordinate a maintenance window for overwriteSchema. Never leave autoMerge=true globally in production batch pipelines.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CATEGORY 4: STRUCTURED STREAMING ===== -->
+<section class="cat-sec" data-cat="stream">
+  <div class="cat-hdr">
+    <span class="cat-ico">🌊</span>
+    <span class="cat-ttl" style="color:var(--cat-stream)">Structured Streaming</span>
+    <span class="cat-pill" style="color:var(--cat-stream)">7 questions</span>
+  </div>
+
+  <div class="qc" data-cat="stream" data-id="1">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">26</span>
+      <div class="qtxt">Explain watermarks in Structured Streaming. How do they bound state for windowed aggregations? What happens to data that arrives after the watermark?</div>
+      <div class="qbdg"><span class="db db-p">Principal</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <p><strong>Watermark definition:</strong> <code>withWatermark("event_time", "10 minutes")</code> tells Spark the maximum expected lateness. Watermark = max(event_time seen so far) − 10 minutes. It advances only forward, never backward.</p>
+        <p><strong>State bound:</strong> Spark maintains state (partial window results) for each window. Once the watermark passes a window's end time, that window is finalized — its state is emitted and then dropped. Without watermarks, state grows forever → OOM on long-running jobs.</p>
+        <h4>Behavior by output mode</h4>
+        <ul>
+          <li><strong>Append mode:</strong> windows emit to output only after the watermark passes their end time. Late data (event_time &lt; watermark) is silently dropped. Guaranteed complete rows in output.</li>
+          <li><strong>Update mode:</strong> window results emitted every micro-batch as they update. Late data still dropped after watermark. More rows in output but each may be a partial update.</li>
+          <li><strong>Complete mode:</strong> full aggregation result emitted every batch. Watermarks don't prune state in this mode — state grows unbounded. Use only for small, bounded aggregations.</li>
+        </ul>
+        <pre><span class="cmt"># Watermark + window aggregation</span>
+df.withWatermark(<span class="str">"ts"</span>, <span class="str">"10 minutes"</span>) \
+  .groupBy(<span class="fn">window</span>(<span class="str">"ts"</span>, <span class="str">"5 minutes"</span>), <span class="str">"user_id"</span>) \
+  .agg(F.<span class="fn">count</span>(<span class="str">"*"</span>)) \
+  .writeStream<span class="op">.</span>outputMode(<span class="str">"append"</span>)</pre>
+        <div class="tip"><strong>Staff insight:</strong> Choosing watermark delay is a business decision: how late can legitimate data arrive? A 10-minute watermark means you lose data older than 10 minutes. Too tight → data loss for slow consumers. Too loose → large state, high memory usage. Monitor <code>watermark delay</code> in Spark UI Streaming tab to validate your assumption against real late-arrival patterns.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="stream" data-id="2">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">27</span>
+      <div class="qtxt">Explain the stateful operations state store. What is the RocksDB state store, when do you need it, and how does it scale?</div>
+      <div class="qbdg"><span class="db db-p">Principal</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <p><strong>Stateful operations</strong> (windowed aggregation, deduplication, stream-stream join, <code>mapGroupsWithState</code>) must persist intermediate state between micro-batches.</p>
+        <h4>Default state store (HDFS-backed)</h4>
+        <p>Stores state as in-memory hash maps, checkpointed to HDFS/S3 every batch. Limitations: entire state must fit in JVM heap; large state (millions of keys) → GC pressure, OOM, checkpoint latency spikes.</p>
+        <h4>RocksDB state store (Databricks)</h4>
+        <p>Disk-based embedded key-value store (LSM tree). State lives on executor local NVMe, not in JVM heap.</p>
+        <ul>
+          <li>Enable: <code>spark.sql.streaming.stateStore.providerClass = com.databricks.sql.streaming.state.RocksDBStateStoreProvider</code></li>
+          <li>Handles state 10–100× larger than JVM heap allows</li>
+          <li>Faster checkpoints: only delta writes to checkpoint location (not full state dump)</li>
+          <li>Near-zero GC impact (state off-heap)</li>
+          <li>Compaction runs in background</li>
+        </ul>
+        <h4>Scaling state</h4>
+        <p>State parallelism = <code>spark.sql.shuffle.partitions</code>. More partitions = more state shards = more parallelism. Each executor handles N state partitions. For billion-key state: increase shuffle partitions + use RocksDB + provision NVMe-backed instances.</p>
+        <div class="tip"><strong>Staff insight:</strong> If your stateful streaming job's state size exceeds ~2 GB total, switch to RocksDB immediately. The default HDFS state store will cause GC pressure and checkpoint latency that grows over time. Session windowing and fraud detection patterns with millions of active sessions always need RocksDB.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="stream" data-id="3">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">28</span>
+      <div class="qtxt">Explain exactly-once semantics in Structured Streaming end-to-end. What makes Delta Lake as a sink guarantee exactly-once?</div>
+      <div class="qbdg"><span class="db db-s">Staff</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <p>End-to-end exactly-once requires three components working together:</p>
+        <ul>
+          <li><strong>Replayable source:</strong> Kafka (offset-based), files (Auto Loader with checkpoint). The source must be re-readable from any offset on restart.</li>
+          <li><strong>Checkpointing:</strong> Spark writes committed offsets + state to checkpoint directory after every batch. On restart, reads checkpoint → replays only unprocessed offsets.</li>
+          <li><strong>Idempotent sink:</strong> if the same batch is written twice (driver crash after write, before checkpoint update), the sink must produce the same result.</li>
+        </ul>
+        <h4>Delta Lake exactly-once guarantee</h4>
+        <p>Delta stores the Spark streaming <code>app_id</code> and <code>batch_id</code> in each commit's CommitInfo. Before writing, Delta checks if this <code>(app_id, batch_id)</code> pair already committed → if yes, skip the write (idempotent). This means even if Spark re-processes a batch after a driver restart, Delta deduplicates the write at the transaction level.</p>
+        <pre><span class="cmt"># Streaming write to Delta — exactly-once built-in</span>
+df.writeStream \
+  .format(<span class="str">"delta"</span>) \
+  .option(<span class="str">"checkpointLocation"</span>, <span class="str">"/ckpt/my_stream"</span>) \
+  .outputMode(<span class="str">"append"</span>) \
+  .start(<span class="str">"/delta/my_table"</span>)</pre>
+        <div class="tip"><strong>Staff insight:</strong> Kafka as a sink requires idempotent producer + transactional producer for true EOS — harder to configure. Delta as a sink provides the simplest exactly-once path for lakehouse architectures. For foreachBatch with external sinks (JDBC, REST), you must implement idempotency yourself using the batchId as a transaction identifier.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="stream" data-id="4">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">29</span>
+      <div class="qtxt">What is Databricks Auto Loader? How does it scale to hundreds of millions of files? What's the difference between directory listing and file notification mode?</div>
+      <div class="qbdg"><span class="db db-s">Staff</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <p>Auto Loader (<code>format("cloudFiles")</code>) incrementally ingests new files from cloud storage as they arrive. State (processed files) stored in checkpoint directory — guarantees exactly-once per file.</p>
+        <h4>Directory listing mode (default)</h4>
+        <ul>
+          <li>Lists all files in the source path, diffs against checkpoint state</li>
+          <li>Cost: O(n) cloud API calls per trigger (scales linearly with total file count)</li>
+          <li>Works everywhere, no cloud event infrastructure needed</li>
+          <li>Breaks down at 10M+ files (list API cost becomes dominant)</li>
+        </ul>
+        <h4>File notification mode</h4>
+        <ul>
+          <li><code>cloudFiles.useNotifications=true</code></li>
+          <li>Uses cloud event services: AWS S3 → EventBridge → SQS; ADLS → Azure Event Grid → Event Hubs</li>
+          <li>Cost: O(1) per trigger — only new events consumed from queue</li>
+          <li>Scales to hundreds of millions of files with no degradation</li>
+          <li>Requires cloud event infrastructure setup (Auto Loader can provision automatically)</li>
+        </ul>
+        <pre><span class="cmt"># Auto Loader with schema inference + notification mode</span>
+spark.readStream.format(<span class="str">"cloudFiles"</span>) \
+  .option(<span class="str">"cloudFiles.format"</span>, <span class="str">"json"</span>) \
+  .option(<span class="str">"cloudFiles.useNotifications"</span>, <span class="str">"true"</span>) \
+  .option(<span class="str">"cloudFiles.schemaLocation"</span>, <span class="str">"/ckpt/schema"</span>) \
+  .load(<span class="str">"s3://bucket/landing/"</span>)</pre>
+        <div class="tip"><strong>Staff insight:</strong> Always use notification mode for production ingestion. At 1M+ files, directory listing triggers become the bottleneck, not the actual data processing. Notification mode is free in terms of trigger cost — you're only paying for SQS/Event Grid messages, which are fractions of a cent per 1M events.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="stream" data-id="5">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">30</span>
+      <div class="qtxt">Your Kafka streaming job is falling behind at 500K events/second. Walk me through your complete investigation and optimization plan.</div>
+      <div class="qbdg"><span class="db db-p">Principal</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <h4>Step 1 — Measure the gap</h4>
+        <p>Spark UI Streaming tab: input rate vs processing rate. If input rate = 500K/s and processing rate = 200K/s → throughput gap → scale up. If processing rate ≥ input rate but lag grows → startup cost issue or trigger overhead.</p>
+        <h4>Step 2 — Parallelism ceiling</h4>
+        <p><strong>Kafka partition count = Spark parallelism ceiling.</strong> With 10 Kafka partitions, maximum concurrent Spark tasks = 10, regardless of executor count. Fix: increase Kafka partitions (10 → 50+). Also tune <code>maxOffsetsPerTrigger</code> to control batch size per trigger.</p>
+        <h4>Step 3 — Identify bottleneck</h4>
+        <ul>
+          <li><strong>High per-batch processing time:</strong> profile each micro-batch. Is it a stateful operation? → switch to RocksDB state store. Is it a UDF? → vectorize. Is it a shuffle? → repartition on groupBy key before stateful op.</li>
+          <li><strong>Write bottleneck:</strong> writing too many small files to Delta → increase trigger interval (1s → 5s), use foreachBatch with explicit <code>coalesce()</code> before write</li>
+          <li><strong>State size:</strong> state growing unboundedly → set watermark, switch to RocksDB</li>
+          <li><strong>GC overhead:</strong> executor GC &gt; 15% → off-heap + increase executor memory</li>
+        </ul>
+        <h4>Step 4 — Configuration tuning</h4>
+        <ul>
+          <li><code>spark.streaming.kafka.maxRatePerPartition</code> — cap burst</li>
+          <li>Increase trigger interval to reduce per-batch overhead (trade latency for throughput)</li>
+          <li>Scale executors (each Kafka partition → one task; 50 partitions → 50 executors minimum)</li>
+        </ul>
+        <div class="tip"><strong>Staff insight:</strong> 500K/s with only 10 Kafka partitions is the most common streaming bottleneck I see. The fix is not more Spark executors — it's more Kafka partitions. Always right-size Kafka partitions at topic creation based on target throughput, not estimated initial load.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="stream" data-id="6">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">31</span>
+      <div class="qtxt">What is <code>foreachBatch</code> and when should you use it over a native streaming sink? What idempotency guarantees does it provide?</div>
+      <div class="qbdg"><span class="db db-s">Staff</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <p><code>foreachBatch(func)</code> exposes each micro-batch as a regular DataFrame with a stable <code>batchId</code>. Unlike native sinks, you have full DataFrame API control inside the function.</p>
+        <h4>When to use foreachBatch</h4>
+        <ul>
+          <li>Write same batch to multiple sinks atomically</li>
+          <li>Apply a MERGE/upsert to Delta (not just append)</li>
+          <li>Deduplicate before writing (<code>dropDuplicates(["event_id"])</code>)</li>
+          <li>Write to non-natively-supported sinks (JDBC with batch write, Elasticsearch)</li>
+          <li>Apply complex business logic that can't be expressed in streaming SQL</li>
+        </ul>
+        <pre><span class="kw">def</span> <span class="fn">process_batch</span>(df, batch_id):
+    <span class="cmt"># Deduplicate within batch</span>
+    df = df.dropDuplicates([<span class="str">"event_id"</span>])
+    <span class="cmt"># Upsert to Delta with MERGE</span>
+    df.createOrReplaceTempView(<span class="str">"updates"</span>)
+    df._jdf.sparkSession().sql(<span class="str">"""
+        MERGE INTO silver.orders t
+        USING updates s ON t.id = s.id
+        WHEN MATCHED THEN UPDATE SET *
+        WHEN NOT MATCHED THEN INSERT *
+    """</span>)
+
+stream.writeStream.foreachBatch(process_batch) \
+      .option(<span class="str">"checkpointLocation"</span>, <span class="str">"/ckpt"</span>).start()</pre>
+        <h4>Idempotency via batchId</h4>
+        <p>The <code>batchId</code> is stable — if the function is re-executed on retry (driver restart), same <code>batchId</code> is provided. Using Delta as the target with MERGE or append automatically deduplicates via Delta's <code>(app_id, batch_id)</code> tracking. For JDBC: use <code>batchId</code> as a transaction version column and DELETE+INSERT within a transaction.</p>
+        <div class="tip"><strong>Staff insight:</strong> foreachBatch is the correct choice for 90% of production streaming sinks. Native streaming sinks are simpler but less flexible. The key discipline: every foreachBatch function must be idempotent — if called twice with the same batchId, the final state must be identical.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="stream" data-id="7">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">32</span>
+      <div class="qtxt">Compare micro-batch vs continuous processing in Structured Streaming. What are the real latency and throughput trade-offs, and when would you actually use continuous?</div>
+      <div class="qbdg"><span class="db db-s">Staff</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <ul>
+          <li><strong>Micro-batch:</strong> default mode. Collects records for a trigger interval (e.g., 1s, 100ms), runs a Spark batch job on the collected data, commits. Minimum latency: ~100ms (trigger + job overhead). Handles aggregations, watermarks, stateful ops, all output modes. Proven in production at massive scale.</li>
+          <li><strong>Continuous processing:</strong> single long-running task per partition, records processed one-at-a-time with ~1ms latency. Config: <code>Trigger.Continuous("1 second")</code> (checkpoint interval, not trigger interval). Experimental (Spark 3.3).</li>
+        </ul>
+        <h4>Continuous processing limitations</h4>
+        <ul>
+          <li>Only stateless map operations — no groupBy, window, join, watermark</li>
+          <li>Very limited sink support (memory, console, Kafka experimental)</li>
+          <li>Not production-ready for most enterprise workloads</li>
+          <li>Cannot use Delta as sink in continuous mode</li>
+        </ul>
+        <h4>When to actually use continuous</h4>
+        <p>In practice: almost never in enterprise data engineering. The ~100ms micro-batch latency satisfies 99.9% of real streaming SLAs. For &lt;10ms latency with complex operations, Apache Flink or Kafka Streams are the production-ready choices, not Spark continuous processing.</p>
+        <div class="tip"><strong>Staff insight:</strong> When a stakeholder asks for "real-time" they almost always mean "within 30 seconds" or "within 5 minutes" — micro-batch with a 1–5 second trigger is more than sufficient and operationally far more reliable. Set the actual latency SLA in numbers before picking the processing model.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CATEGORY 5: DATABRICKS PLATFORM ===== -->
+<section class="cat-sec" data-cat="dbx">
+  <div class="cat-hdr">
+    <span class="cat-ico">🧱</span>
+    <span class="cat-ttl" style="color:var(--cat-dbx)">Databricks Platform Deep Dive</span>
+    <span class="cat-pill" style="color:var(--cat-dbx)">7 questions</span>
+  </div>
+
+  <div class="qc" data-cat="dbx" data-id="1">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">33</span>
+      <div class="qtxt">Explain Delta Live Tables (DLT). What are Expectations? How does DLT manage pipeline state differently from hand-written Spark?</div>
+      <div class="qbdg"><span class="db db-s">Staff</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <p>DLT is a declarative pipeline framework — you define <em>what</em> tables should contain using decorators, and DLT manages <em>how</em> to compute, when to refresh, and how to handle failures.</p>
+        <pre><span class="kw">import</span> dlt
+<span class="kw">from</span> pyspark.sql <span class="kw">import</span> functions <span class="kw">as</span> F
+
+<span class="op">@</span>dlt.<span class="fn">table</span>()
+<span class="kw">def</span> <span class="fn">silver_orders</span>():
+    <span class="kw">return</span> dlt.<span class="fn">read_stream</span>(<span class="str">"bronze_orders"</span>) \
+              .<span class="fn">filter</span>(F.<span class="fn">col</span>(<span class="str">"status"</span>) != <span class="str">"TEST"</span>)
+
+<span class="op">@</span>dlt.<span class="fn">table</span>()
+<span class="op">@</span>dlt.<span class="fn">expect_or_drop</span>(<span class="str">"valid_amount"</span>, <span class="str">"amount &gt; 0"</span>)
+<span class="op">@</span>dlt.<span class="fn">expect</span>(<span class="str">"valid_user"</span>, <span class="str">"user_id IS NOT NULL"</span>)
+<span class="kw">def</span> <span class="fn">gold_revenue</span>():
+    <span class="kw">return</span> dlt.<span class="fn">read</span>(<span class="str">"silver_orders"</span>).<span class="fn">groupBy</span>(<span class="str">"date"</span>).<span class="fn">agg</span>(...)</pre>
+        <h4>Expectations — data quality contracts</h4>
+        <ul>
+          <li><strong><code>@expect</code>:</strong> log violations, let row through. Monitoring only.</li>
+          <li><strong><code>@expect_or_drop</code>:</strong> drop rows that violate constraint. Good for filtering bad data.</li>
+          <li><strong><code>@expect_or_fail</code>:</strong> fail the entire pipeline on any violation. Use for zero-tolerance data quality.</li>
+        </ul>
+        <h4>DLT vs hand-written Spark</h4>
+        <ul>
+          <li><strong>Auto-dependency resolution:</strong> DLT builds DAG from <code>dlt.read()</code> references — no manual scheduling</li>
+          <li><strong>Incremental state:</strong> DLT tracks which tables are stale and only reprocesses changed upstream data</li>
+          <li><strong>Retry semantics:</strong> built-in retry with incremental progress (failed batch retries from checkpoint, not from scratch)</li>
+          <li><strong>DQ metrics dashboard:</strong> violation counts per expectation visible in UI</li>
+        </ul>
+        <div class="tip"><strong>Staff insight:</strong> DLT is excellent for standardized team pipelines — reduces the surface area for errors. Limitations: less flexible for custom stateful logic, harder to test locally (requires DLT runtime), can't easily do complex accumulate patterns that don't fit the @table/@view model. Evaluate fit per pipeline, not as a blanket mandate.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="dbx" data-id="2">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">34</span>
+      <div class="qtxt">Explain Unity Catalog — three-level namespace, fine-grained access control, column masking, row filtering. How does it differ from legacy Hive metastore?</div>
+      <div class="qbdg"><span class="db db-s">Staff</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <p><strong>Three-level namespace:</strong> <code>catalog.schema.table</code> (vs Hive's <code>database.table</code>). Catalogs are the top-level governance boundary. One Unity Catalog metastore per region shared across all workspaces in an organization.</p>
+        <h4>Fine-grained access control</h4>
+        <ul>
+          <li><strong>Column masking:</strong> define a masking policy that returns a masked value based on the caller's group membership. E.g., non-PII-approved users see <code>XXXX-1234</code> instead of full credit card number — transparent to queries, enforced at scan time.</li>
+          <li><strong>Row filtering:</strong> define a filter policy that appends a WHERE clause to every query on the table. E.g., sales reps only see rows where <code>region = current_user_region()</code>. Zero application code changes.</li>
+          <li><strong>Delta Sharing:</strong> share data across organizations / clouds without copying data, with access controls enforced at the Unity Catalog level</li>
+        </ul>
+        <h4>vs Legacy Hive metastore</h4>
+        <div class="mg">
+          <div class="mc"><span class="v" style="font-size:13px;white-space:nowrap">Workspace</span><span class="l">Hive scope</span></div>
+          <div class="mc"><span class="v" style="font-size:13px;white-space:nowrap">Organization</span><span class="l">UC scope</span></div>
+          <div class="mc"><span class="v" style="font-size:13px;white-space:nowrap">None</span><span class="l">Hive column/row security</span></div>
+          <div class="mc"><span class="v" style="font-size:13px;white-space:nowrap">Full RBAC</span><span class="l">UC security model</span></div>
+        </div>
+        <div class="tip"><strong>Staff insight:</strong> UC migration is significant — managed table locations change (UC stores managed tables in a default storage account, not the workspace's DBFS root). Plan external tables to avoid storage surprise. The organization-wide lineage graph and audit trail are the undervalued UC features — every access to every table is logged centrally, which is invaluable for compliance and incident investigation.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="dbx" data-id="3">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">35</span>
+      <div class="qtxt">What is the Photon engine? What workloads benefit most? What are its hard limitations?</div>
+      <div class="qbdg"><span class="db db-s">Staff</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <p>Photon is a rewrite of Spark's query engine in <strong>C++</strong>, replacing the JVM-based Tungsten engine for supported operations. Operates on Apache Arrow-format columnar data. Uses <strong>SIMD vectorization</strong> (AVX2/AVX-512) — processes 256–512 bits per CPU cycle.</p>
+        <h4>Why faster</h4>
+        <ul>
+          <li>No JVM overhead (no GC, no boxing/unboxing, direct memory)</li>
+          <li>Vectorized columnar execution vs Tungsten's row-based codegen</li>
+          <li>Better CPU cache utilization (columnar scan = sequential memory access)</li>
+        </ul>
+        <h4>Workloads that benefit most</h4>
+        <ul>
+          <li>SQL / DataFrame with built-in functions (sort, hash agg, hash join, window functions)</li>
+          <li>Wide columnar scans with high selectivity</li>
+          <li>Delta Lake reads with file skipping</li>
+          <li>DBSQL (Databricks SQL) analytical queries — typical 2–4× speedup</li>
+        </ul>
+        <h4>Hard limitations</h4>
+        <ul>
+          <li><strong>Python UDFs:</strong> fall back to JVM Spark (serialize to Python, execute, serialize back). Photon acceleration is lost.</li>
+          <li><strong>Some complex operations:</strong> not all Spark operators have Photon implementations yet</li>
+          <li><strong>Databricks-only:</strong> not available in open-source Spark or non-Databricks deployments</li>
+          <li><strong>Pure ML training:</strong> if your job is 90% scikit-learn / PyTorch (Python compute), Photon doesn't help the bottleneck</li>
+        </ul>
+        <div class="tip"><strong>Staff insight:</strong> Photon is automatic on Databricks clusters — no configuration needed. The actionable insight is: if a workload is Python-UDF-heavy, migrating those UDFs to SQL/built-in functions unlocks Photon. That single change can deliver the same speedup as doubling compute budget.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="dbx" data-id="4">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">36</span>
+      <div class="qtxt">Explain Databricks Workflows — complex DAG dependencies, repair runs, task values, and how it compares to Airflow for orchestration.</div>
+      <div class="qbdg"><span class="db db-s">Staff</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <p>Databricks Workflows is a native orchestration layer supporting multi-task DAGs with multiple task types: Notebook, Python script, JAR, SQL, DLT pipeline, dbt, ML model training.</p>
+        <h4>Key capabilities</h4>
+        <ul>
+          <li><strong>Repair runs:</strong> re-run only failed + downstream-dependent tasks, preserving successful task results. Critical for expensive pipelines — a 6-hour job that fails at hour 5 can repair from hour 5 instead of restarting. Only available in Workflows, not ad-hoc clusters.</li>
+          <li><strong>Task values:</strong> pass data between tasks. Upstream: <code>dbutils.jobs.taskValues.set("key", value)</code>. Downstream: <code>dbutils.jobs.taskValues.get("upstream_task", "key")</code>. Enables metadata-driven dynamic pipelines (e.g., ingest task outputs table list → downstream tasks process each table).</li>
+          <li><strong>DAG dependencies:</strong> "Depends on" connections between tasks. Tasks without dependencies run in parallel. Diamond dependencies supported (fan-out then fan-in).</li>
+          <li><strong>Alerts:</strong> email/webhook on failure/success/start. Integrates with PagerDuty, Slack.</li>
+        </ul>
+        <h4>Workflows vs Airflow</h4>
+        <ul>
+          <li><strong>Workflows wins:</strong> Databricks-native, zero infra to manage, tight integration with clusters/DLT/MLflow, repair runs</li>
+          <li><strong>Airflow wins:</strong> cross-system orchestration (Databricks + Snowflake + S3 + dbt + external APIs), complex branching/templating, ecosystem (400+ providers), existing team expertise</li>
+          <li><strong>Common pattern:</strong> Airflow orchestrates across systems; Workflows orchestrates within Databricks</li>
+        </ul>
+        <div class="tip"><strong>Staff insight:</strong> Repair runs alone justify using Workflows over Airflow for Databricks-centric pipelines. A 6-hour pipeline that fails at 5:30 and can repair in 30 minutes vs restarting from scratch is a massive operational win. Always use job clusters (not shared interactive) in Workflows for isolation and cost control.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="dbx" data-id="5">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">37</span>
+      <div class="qtxt">What are instance pools? When are they the right tool, and when are they counterproductive?</div>
+      <div class="qbdg"><span class="db db-s">Staff</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <p>Instance pools pre-provision cloud VMs that sit idle, ready for cluster allocation. When a cluster starts, it pulls VMs from the pool (seconds) instead of provisioning from scratch (AWS: 2–5 minutes).</p>
+        <h4>When pools are the right tool</h4>
+        <ul>
+          <li><strong>High-frequency jobs:</strong> if the same cluster type is needed multiple times per hour, amortizing pool idle cost makes economic sense</li>
+          <li><strong>Interactive/development clusters:</strong> developer productivity gain from 15-second vs 5-minute startup is measurable — happier engineers, faster iteration</li>
+          <li><strong>Streaming clusters:</strong> must restart quickly after failure; pool startup SLA is critical for streaming reliability</li>
+          <li><strong>Fixed-schedule pipelines with known start times:</strong> pre-warm the pool 5 minutes before job runs</li>
+        </ul>
+        <h4>When pools are counterproductive</h4>
+        <ul>
+          <li><strong>Infrequently run jobs:</strong> idle pool VMs billed at full VM cost; if a job runs once/day for 1 hour, a pool idle 23 hours → 23× waste</li>
+          <li><strong>Spot instance-heavy clusters:</strong> spot startup is already variable (market availability), pools don't help spot latency</li>
+          <li><strong>Variable instance types:</strong> pools are type-specific; if jobs need varying sizes, pool benefits are diluted</li>
+        </ul>
+        <p>Break-even formula: <code>pool_savings = (cluster_count × startup_savings_minutes × hourly_rate / 60) - (idle_pool_vms × idle_hours × vm_hourly_cost)</code></p>
+        <div class="tip"><strong>Staff insight:</strong> Model the break-even before deploying org-wide pools. Dev clusters: almost always worth it (startup savings → developer velocity). Nightly batch ETL: often not worth it (1 cluster, low frequency). Streaming: always worth it (fast restart is a reliability requirement, not just convenience).</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="dbx" data-id="6">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">38</span>
+      <div class="qtxt">Explain Databricks Serverless compute. What are the cold start implications and when should you explicitly NOT use it?</div>
+      <div class="qbdg"><span class="db db-s">Staff</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <p>Serverless = Databricks-managed compute, no cluster configuration, instant provisioning (seconds vs minutes). Pay per second of execution. Types: Serverless SQL Warehouses (DBSQL), Serverless Jobs (notebooks, Python), Serverless DLT.</p>
+        <h4>Cold start</h4>
+        <p>First query after idle period may be slightly slower (runtime initialization: ~3–10s). Subsequent queries: no cold start — compute stays warm for a short grace period. For BI dashboards with regular usage: negligible. For overnight batch triggers: plan for the first-query overhead.</p>
+        <h4>When NOT to use serverless</h4>
+        <ul>
+          <li><strong>Long-running compute-intensive ETL:</strong> per-second billing on sustained compute can exceed reserved-instance classic cluster cost by 40–80%</li>
+          <li><strong>GPU workloads:</strong> serverless doesn't offer GPU instance types — ML training on GPU requires classic clusters</li>
+          <li><strong>Regulatory multi-tenant isolation:</strong> some compliance frameworks (FedRAMP, certain HIPAA interpretations) require dedicated single-tenant compute — serverless is shared infrastructure</li>
+          <li><strong>Custom software dependencies:</strong> serverless has a fixed runtime; custom JARs, native libraries, or non-standard Python packages may not be installable</li>
+        </ul>
+        <h4>When serverless excels</h4>
+        <ul>
+          <li>BI tool SQL queries (DBSQL) — spiky, unpredictable, need instant response</li>
+          <li>Data exploration and development notebooks</li>
+          <li>Variable workloads with wide utilization swings</li>
+        </ul>
+        <div class="tip"><strong>Staff insight:</strong> Serverless SQL Warehouse is often cheaper than a classic cluster for BI workloads because you pay only when queries run (not when the cluster idles between queries from analysts). Classic clusters make more sense for predictable, sustained ETL pipelines running 8+ hours/day where reserved instances apply.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="dbx" data-id="7">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">39</span>
+      <div class="qtxt">What is Databricks Connect v2? How does it enable local development, and what are its limitations compared to running notebooks on the cluster?</div>
+      <div class="qbdg"><span class="db db-s">Staff</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <p>Databricks Connect v2 lets you write PySpark code in your local IDE (VS Code, PyCharm, IntelliJ) that executes on a remote Databricks cluster. Execution happens on the cluster; your laptop just sends plan fragments via gRPC.</p>
+        <pre><span class="cmt"># Local development with Databricks Connect v2</span>
+<span class="kw">from</span> databricks.connect <span class="kw">import</span> DatabricksSession
+
+spark = DatabricksSession.builder \
+    .remote(<span class="str">"sc://your-workspace.azuredatabricks.net"</span>) \
+    .getOrCreate()
+
+<span class="cmt"># This executes on the cluster, not locally</span>
+df = spark.read.format(<span class="str">"delta"</span>).load(<span class="str">"/delta/table"</span>)
+df.groupBy(<span class="str">"date"</span>).count().show()</pre>
+        <h4>Key benefits</h4>
+        <ul>
+          <li><strong>Full IDE debugging:</strong> breakpoints, variable inspection, step-through on production-scale data</li>
+          <li><strong>pytest integration:</strong> write unit tests that run against real cluster data without notebook overhead</li>
+          <li><strong>Version control:</strong> code stays in git, not locked in notebooks</li>
+          <li><strong>Faster iteration:</strong> no cell-by-cell execution model; run full module tests</li>
+        </ul>
+        <h4>Limitations</h4>
+        <ul>
+          <li>Not all Spark operations supported (some RDD operations, certain streaming modes)</li>
+          <li>Requires an interactive cluster (not job clusters) — slightly more expensive for dev</li>
+          <li>Requires matching Databricks Connect version and cluster DBR version</li>
+          <li><code>dbutils</code> has partial support — file operations work, secrets work, widgets limited</li>
+        </ul>
+        <div class="tip"><strong>Staff insight:</strong> Databricks Connect v2 + pytest + GitHub Actions CI = engineering velocity equivalent to local development for web services. Mandate it for all team members — the productivity gain from real debugging tools vs print-statement debugging in notebooks is enormous. Pair with a shared dev cluster (pool-backed) to minimize cost.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CATEGORY 6: SYSTEM DESIGN ===== -->
+<section class="cat-sec" data-cat="design">
+  <div class="cat-hdr">
+    <span class="cat-ico">🏗</span>
+    <span class="cat-ttl" style="color:var(--cat-design)">Staff-Level System Design</span>
+    <span class="cat-pill" style="color:var(--cat-design)">5 questions</span>
+  </div>
+
+  <div class="qc" data-cat="design" data-id="1">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">40</span>
+      <div class="qtxt">Design a real-time fraud detection pipeline on Databricks processing 500M card transactions/day with sub-200ms end-to-end decision latency.</div>
+      <div class="qbdg"><span class="db db-p">Principal</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <p><strong>Scale:</strong> 500M/day = ~5,800 TPS average, 20K TPS peak. Sub-200ms end-to-end.</p>
+        <h4>Architecture layers</h4>
+        <ul>
+          <li><strong>Ingest:</strong> Kafka (20+ partitions, partitioned by card_id for ordering). Separate topics: raw events, decisions, feedback.</li>
+          <li><strong>Stream processing</strong> (Structured Streaming on Databricks, RocksDB state store):
+            <ul>
+              <li>Parse + normalize transaction events</li>
+              <li>Enrich with cardholder profile (Redis cache lookup, broadcast warm lookup table)</li>
+              <li>Feature extraction: velocity (tx count per card in last 1/5/15 min via <code>mapGroupsWithState</code>), location anomaly (distance/time from last tx), merchant category patterns</li>
+            </ul>
+          </li>
+          <li><strong>ML Scoring:</strong> XGBoost model as MLflow pyfunc, deployed as Databricks Model Serving REST endpoint. Micro-batch calls endpoint via foreachBatch with batched HTTP requests. Or: embed model as Pandas UDF for lower latency (avoids HTTP round-trip).</li>
+          <li><strong>Decision engine:</strong> fraud score → rule engine (velocity limits, geographic rules) → approve/decline. Output to Kafka decision topic.</li>
+          <li><strong>Lakehouse storage:</strong> Bronze (raw events), Silver (enriched + scored), Gold (daily aggregates, model training data). All Delta Lake.</li>
+          <li><strong>Model training:</strong> daily batch retrain on 90 days of labeled data. MLflow tracking + Registry for A/B deployment.</li>
+        </ul>
+        <h4>Latency budget (200ms)</h4>
+        <div class="mg">
+          <div class="mc"><span class="v">~5ms</span><span class="l">Kafka produce</span></div>
+          <div class="mc"><span class="v">~10ms</span><span class="l">Spark ingest</span></div>
+          <div class="mc"><span class="v">~5ms</span><span class="l">Redis enrich</span></div>
+          <div class="mc"><span class="v">~20ms</span><span class="l">ML inference</span></div>
+          <div class="mc"><span class="v">~5ms</span><span class="l">Decision + produce</span></div>
+        </div>
+        <div class="tip"><strong>Staff insight:</strong> The embedded Pandas UDF model (vs REST endpoint) saves 50–100ms per micro-batch but requires model redeployment to update. For fraud where model updates are daily, embedded is typically the right call. Plan the feedback loop (labeled outcomes → training data) from day 1 — a model without feedback loops degrades within weeks due to concept drift.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="design" data-id="2">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">41</span>
+      <div class="qtxt">You're migrating a 2PB Oracle/Teradata data warehouse to Databricks Delta Lake in 6 months with zero downtime. Design the strategy.</div>
+      <div class="qbdg"><span class="db db-p">Principal</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <h4>Phase 1 — Discovery (Month 1)</h4>
+        <ul>
+          <li>Catalog all tables: size, daily change rate, business criticality, SLA</li>
+          <li>Analyze query patterns (top 50 queries by execution time × frequency)</li>
+          <li>Identify stored procedures, vendor-specific SQL functions, ODBC type mappings</li>
+          <li>Set up Databricks environment: Unity Catalog, networking, IAM, VPC peering</li>
+          <li>Establish migration criteria: row count match, checksum validation, SLA benchmark</li>
+        </ul>
+        <h4>Phase 2 — Parallel infrastructure (Months 2–3)</h4>
+        <ul>
+          <li><strong>Dual-write:</strong> all active ETL writes to both Oracle and Delta simultaneously. Validates parity under production load.</li>
+          <li><strong>Historical load:</strong> export Oracle tables → S3/ADLS staging → Databricks Auto Loader → Delta (partition by date for incremental loads)</li>
+          <li>Convert stored procedures → Python/SQL notebooks; validate output row-by-row</li>
+          <li>Migrate ETL jobs to Databricks Workflows (keep Oracle jobs running in parallel)</li>
+        </ul>
+        <h4>Phase 3 — Validation + progressive cutover (Months 4–5)</h4>
+        <ul>
+          <li>Shadow mode: BI tools run queries against both systems, compare results</li>
+          <li>Performance benchmark: critical query SLAs on Databricks vs Oracle</li>
+          <li>Progressive read migration: 5% → 25% → 50% → 100% of BI traffic to Databricks</li>
+          <li>Identify and fix divergences before full cutover</li>
+        </ul>
+        <h4>Phase 4 — Cutover + decommission (Month 6)</h4>
+        <ul>
+          <li>Final cutover: redirect all writes to Databricks; Oracle → read-only</li>
+          <li>Monitor for 30 days (Oracle available as rollback)</li>
+          <li>Decommission Oracle licenses</li>
+        </ul>
+        <div class="tip"><strong>Staff insight:</strong> Budget 30% of effort for SQL dialect differences (Teradata OREPLACE, BTEQ macros, Oracle CONNECT BY, vendor-specific window functions) — these are the hidden time traps. Stored procedure rewrite is always the longest task. Start there, not with the data migration.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="design" data-id="3">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">42</span>
+      <div class="qtxt">Design a cost optimization framework for a Databricks environment currently spending $3M/year. What are the 6 highest-leverage levers in order of impact?</div>
+      <div class="qbdg"><span class="db db-p">Principal</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <p>Framework: Measure → Attribute → Optimize → Monitor. Never optimize what you haven't measured.</p>
+        <h4>Levers ranked by typical impact</h4>
+        <ul>
+          <li><strong>1. Auto-termination (30–50% savings):</strong> interactive clusters idling overnight. Enforce via cluster policy: <code>autotermination_minutes = 30</code> max for all non-production clusters. This single change is often worth $500K–$1M on $3M spend.</li>
+          <li><strong>2. Spot/preemptible for worker nodes (40–70% VM discount):</strong> use spot for all ETL/batch worker nodes (keep driver on-demand for stability). Set spot bid = on-demand price. Combined with fault-tolerant Spark jobs: minimal retries, massive cost reduction.</li>
+          <li><strong>3. Right-sizing (20–30% savings):</strong> 60% of clusters are oversized. Pull cluster CPU/memory utilization from Ganglia/CloudWatch. Downsize clusters using &lt;40% CPU. Upgrade instance generation (m5 → m6i is 10–15% more efficient at same cost).</li>
+          <li><strong>4. Job cluster mandate for scheduled workloads (15–25% savings):</strong> interactive clusters for scheduled jobs are expensive and unnecessary. Enforce job clusters (auto-terminate after run) via policies. Interactive clusters for engineering only.</li>
+          <li><strong>5. Reserved instances for steady-state baseline (30–40% VM discount):</strong> identify the minimum compute running 24/7 (streaming clusters, always-on warehouses). Commit 1-year reserved for this baseline. Burst with on-demand/spot.</li>
+          <li><strong>6. Query optimization (10–20% via DBU reduction):</strong> faster queries = fewer DBUs. Top 10 slowest expensive queries → Z-Order, predicate pushdown, fix skew. Track cost-per-query with Databricks Cost Management API tagged by job/team.</li>
+        </ul>
+        <div class="tip"><strong>Staff insight:</strong> Levers 1–3 alone typically reduce Databricks spend by 40–60% within 90 days. Start with a cost attribution report: which team / job / cluster is spending what. Teams don't conserve shared resources they don't see attributed to themselves. Chargeback changes behavior faster than technical optimization.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="design" data-id="4">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">43</span>
+      <div class="qtxt">Design a multi-tenant data platform on Databricks for 50 internal teams with different SLAs, cost accountability, and strict data isolation requirements.</div>
+      <div class="qbdg"><span class="db db-p">Principal</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <h4>Governance layer — Unity Catalog</h4>
+        <p>One catalog per domain (finance, marketing, operations, etc.). Each team gets schemas within their domain catalog. Cross-team data sharing via UC Delta Sharing with explicit grants — no data copying. Row-level filters and column masking for sensitive cross-domain access.</p>
+        <h4>Compute isolation — Cluster Policies</h4>
+        <p>Define 3 SLA tiers via cluster policies enforced in Databricks admin:</p>
+        <ul>
+          <li><strong>Tier 1 (critical/prod):</strong> dedicated job clusters, no spot workers, instance pools, max cluster size enforcement, auto-termination 10 min</li>
+          <li><strong>Tier 2 (standard):</strong> spot workers allowed, shared SQL warehouse, auto-termination 30 min</li>
+          <li><strong>Tier 3 (dev/test):</strong> spot only, small instance types, aggressive auto-termination (15 min), dev DBR</li>
+        </ul>
+        <h4>Cost accountability</h4>
+        <ul>
+          <li>Tag all cluster policies with <code>team</code> and <code>cost_center</code> custom tags</li>
+          <li>Monthly chargeback report: Databricks Cost Management API → team → cluster hours × DBU × instance cost</li>
+          <li>Budget alerts via Databricks webhook when team spend exceeds threshold</li>
+          <li>Self-service: teams see their own spend in a shared Cost Dashboard (Gold Delta table)</li>
+        </ul>
+        <h4>Regulatory isolation</h4>
+        <p>Teams with HIPAA/PCI requirements: separate workspace (network isolation) + UC metastore with dedicated storage. Teams in shared workspace: UC fine-grained access is sufficient for most isolation requirements.</p>
+        <div class="tip"><strong>Staff insight:</strong> The platform team's job is to make doing the right thing the easy thing. If teams have to fight the platform to get work done, they'll find workarounds (shared admin credentials, bypassing policies). Design the platform so that the default path (use the cluster policy, write to Unity Catalog) is also the most convenient path.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="design" data-id="5">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">44</span>
+      <div class="qtxt">Design a real-time Feature Store on Databricks serving 100K feature lookups/second with &lt;5ms P99 latency and &lt;2 minute feature freshness.</div>
+      <div class="qbdg"><span class="db db-p">Principal</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <h4>Dual-store architecture</h4>
+        <ul>
+          <li><strong>Offline store (Databricks):</strong> Delta Lake tables per feature group. Feature pipelines compute and write features here. Used for training dataset generation (point-in-time correct joins via Databricks Feature Store API).</li>
+          <li><strong>Online store (Redis Cluster):</strong> serves low-latency lookups. 100K RPS @ &lt;5ms → Redis Cluster with 10 shards (each handling 10K RPS, well within Redis capacity of 100K+ RPS per node).</li>
+        </ul>
+        <h4>Freshness: Delta CDF → Redis sync pipeline</h4>
+        <ul>
+          <li>Feature computation job writes to Delta offline store</li>
+          <li>Streaming job reads Delta CDF → transforms → upserts to Redis via Redis client in foreachBatch</li>
+          <li>CDF-based streaming achieves &lt;2 min freshness for moderate write rates</li>
+        </ul>
+        <h4>Serving API</h4>
+        <ul>
+          <li>FastAPI microservice (or Databricks Model Serving) receives feature keys</li>
+          <li>Batch Redis MGET (pipeline N keys in one round-trip) → assemble feature vector → pass to model</li>
+          <li>Fallback: on Redis miss → query Delta (slower but never null)</li>
+          <li>Deploy behind load balancer with 3 replicas for HA</li>
+        </ul>
+        <h4>Training/serving parity — the hard problem</h4>
+        <p>The feature logic must be identical between offline (Python/PySpark) and online (Python microservice). Use a shared feature transformation library committed to git, imported by both pipeline and serving code. Divergence here is the #1 cause of training/serving skew bugs.</p>
+        <div class="tip"><strong>Staff insight:</strong> Point-in-time correctness for training is the most underestimated complexity. You cannot naively join features to labels by entity_id — you must join on (entity_id, event_time), finding the feature value that was available AT the time the label was generated. Databricks Feature Store's training_set API handles this automatically; custom implementations almost always get it wrong on the first try.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CATEGORY 7: MLFLOW & ML ===== -->
+<section class="cat-sec" data-cat="ml">
+  <div class="cat-hdr">
+    <span class="cat-ico">🤖</span>
+    <span class="cat-ttl" style="color:var(--cat-ml)">MLflow & ML Engineering</span>
+    <span class="cat-pill" style="color:var(--cat-ml)">5 questions</span>
+  </div>
+
+  <div class="qc" data-cat="ml" data-id="1">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">45</span>
+      <div class="qtxt">Explain MLflow's 4 components. How do you design a production CI/CD pipeline for ML models using them?</div>
+      <div class="qbdg"><span class="db db-s">Staff</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <ul>
+          <li><strong>MLflow Tracking:</strong> log params, metrics, artifacts, tags per run. Compare experiments. Central server (Databricks managed tracking server) shared across teams.</li>
+          <li><strong>MLflow Projects:</strong> package ML code with <code>MLproject</code> file for reproducible execution across environments.</li>
+          <li><strong>MLflow Models:</strong> standard model format with flavors (sklearn, pytorch, xgboost, pyfunc). Any model saved as MLflow model can be served without code changes.</li>
+          <li><strong>MLflow Model Registry:</strong> version models with lifecycle stages (None → Staging → Production → Archived). Annotations, transition approval workflows.</li>
+        </ul>
+        <h4>Production CI/CD pipeline</h4>
+        <ul>
+          <li><strong>CI (on PR merge):</strong> (1) unit tests on feature engineering code, (2) integration test: small dataset training run, verify metrics exceed baseline threshold, (3) if pass → register model to Staging in Registry</li>
+          <li><strong>CD (nightly or on-demand):</strong> (1) load Staging model, run on validation holdout dataset, (2) compare metrics vs current Production champion, (3) if Staging beats Production by &gt;X% → auto-promote OR trigger human approval, (4) deploy to Databricks Model Serving → update endpoint to new version</li>
+          <li><strong>Monitoring:</strong> log predictions + feature distributions to Delta → daily drift check → trigger retraining workflow if drift detected</li>
+        </ul>
+        <div class="tip"><strong>Staff insight:</strong> The Registry is the contract between ML engineering and deployment. Nothing goes to production that wasn't registered. Enforce via a platform rule: Model Serving only pulls from Registry → forces all deployment paths through the governance workflow. Also: always log the training dataset version as a run tag — model reproducibility without knowing what data it was trained on is an illusion.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="ml" data-id="2">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">46</span>
+      <div class="qtxt">Databricks Model Serving vs custom FastAPI for inference. When do you choose each?</div>
+      <div class="qbdg"><span class="db db-s">Staff</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <h4>Databricks Model Serving</h4>
+        <ul>
+          <li>Zero-code deployment from Registry (1-click or API)</li>
+          <li>Auto-scales (serverless inference, scales to zero)</li>
+          <li>Built-in A/B testing (traffic split between model versions)</li>
+          <li>Automatic logging, latency metrics, drift tracking</li>
+          <li>Best for: standard sklearn/XGBoost/PyTorch models with standard I/O shapes</li>
+          <li>Limitation: limited custom pre/post-processing; fixed payload format; no custom batching strategies</li>
+        </ul>
+        <h4>Custom FastAPI on Kubernetes</h4>
+        <ul>
+          <li>Full control: custom preprocessing pipeline, dynamic batching, custom hardware</li>
+          <li>GPU inference: K8s + NVIDIA operators for GPU-bound deep learning</li>
+          <li>Multi-model serving: chain models, conditional routing, ensemble outputs</li>
+          <li>RAG systems: custom retrieval + LLM + post-processing in one endpoint</li>
+          <li>Cost: significant DevOps overhead (container, K8s, monitoring, scaling)</li>
+        </ul>
+        <h4>Decision framework</h4>
+        <p>Start with Databricks serving. Add FastAPI only when: (1) custom batching required, (2) GPU compute needed, (3) multi-model ensemble logic, (4) sub-10ms P99 needed (eliminate HTTP overhead with embedded inference).</p>
+        <div class="tip"><strong>Staff insight:</strong> Most teams over-engineer inference from day 1. A TabNet model predicting churn does not need Kubernetes. Default to Databricks Model Serving for 80% of use cases; justify FastAPI complexity with concrete requirements (latency SLA, GPU, multi-model) before building the infra.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="ml" data-id="3">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">47</span>
+      <div class="qtxt">You have 1,000 ML researchers running concurrent experiments. How do you design experiment tracking infrastructure that scales without becoming chaos?</div>
+      <div class="qbdg"><span class="db db-p">Principal</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <h4>Infrastructure</h4>
+        <p>Databricks managed MLflow tracking server (shared, multi-tenant) with WAL-backed storage handles concurrent writes. For OSS deployment: dedicated MLflow server on RDS PostgreSQL backend + artifact store on S3 with path-based team isolation.</p>
+        <h4>Organizational standards (the hard part)</h4>
+        <ul>
+          <li><strong>Naming convention:</strong> <code>{domain}/{team}/{project}</code> for experiments. Enforced via a shared <code>mlflow_utils</code> library that validates experiment names before creating runs.</li>
+          <li><strong>Mandatory tags:</strong> team, environment (dev/staging/prod), dataset_version, model_type. Enforced by the shared library wrapper — no raw <code>mlflow.log_param()</code> allowed in production code.</li>
+          <li><strong>Metric namespacing:</strong> <code>train/accuracy</code>, <code>val/accuracy</code>, <code>test/accuracy</code> — consistent across all experiments for cross-team comparison queries.</li>
+          <li><strong>Artifact policy:</strong> log artifacts to S3 URIs (not inline), limit artifact size per run, auto-clean artifacts from runs not attached to a Registry model after 30 days.</li>
+          <li><strong>Retention:</strong> auto-archive runs &gt;90 days old with no Registry attachment. Searchable via MlflowClient.search_runs() for cross-experiment analysis.</li>
+        </ul>
+        <h4>Access control</h4>
+        <p>Team-level experiment permissions in Unity Catalog (Databricks). Researchers have read access to all experiments (knowledge sharing), write access only to their own team experiments.</p>
+        <div class="tip"><strong>Staff insight:</strong> The biggest failure at scale is inconsistent logging — every team inventing their own metric names makes cross-team comparison impossible. The shared mlflow_utils library is non-optional. Make it easy to use (one import, auto-fills required tags from environment variables) and the compliance rate approaches 100% without enforcement overhead.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="ml" data-id="4">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">48</span>
+      <div class="qtxt">What is Databricks AutoML? What are its real strengths and real limitations compared to a custom ML solution?</div>
+      <div class="qbdg"><span class="db db-s">Staff</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <h4>What AutoML does</h4>
+        <p>Runs automated HPO across multiple algorithms (XGBoost, LightGBM, sklearn RandomForest/LR/DT, Prophet for forecasting). Uses Hyperopt under the hood. Generates a Python notebook with the best-performing run — human-readable, hackable, registered to MLflow.</p>
+        <h4>Real strengths</h4>
+        <ul>
+          <li><strong>Fast baseline:</strong> 30-minute POC that establishes a performance floor for stakeholder alignment</li>
+          <li><strong>Generated notebook:</strong> the best feature — it shows you what AutoML found. Use it as a starting point for custom work.</li>
+          <li><strong>Non-ML-expert teams:</strong> data analysts can get a working model without ML engineering support</li>
+          <li><strong>Feature Store integration:</strong> AutoML integrates directly with Databricks Feature Store</li>
+          <li><strong>Automatic MLflow logging:</strong> all runs logged, best model registered automatically</li>
+        </ul>
+        <h4>Real limitations</h4>
+        <ul>
+          <li>No deep learning / neural architectures</li>
+          <li>No custom loss functions or optimization objectives</li>
+          <li>Limited feature engineering (basic encoders, no domain-specific transformations)</li>
+          <li>Fixed HPO search space — can't explore novel hyperparameter combinations</li>
+          <li>Time-series CV not always correctly implemented for leakage-prone temporal splits</li>
+          <li>Won't outperform a well-tuned custom model for complex problems</li>
+        </ul>
+        <div class="tip"><strong>Staff insight:</strong> AutoML's highest-value use case is the generated notebook. Run AutoML on any new problem, read the generated notebook to understand what transformations and model structure worked, then build a custom solution on top of those insights. You're hiring AutoML as a research assistant, not as your production model.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="ml" data-id="5">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">49</span>
+      <div class="qtxt">Explain MLflow's RAGAS evaluation framework for RAG pipelines. How would you instrument it in a production chatbot, and what metrics should you track?</div>
+      <div class="qbdg"><span class="db db-s">Staff</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <p>RAGAS (Retrieval-Augmented Generation Assessment) is a reference-free evaluation framework for RAG systems — it evaluates without ground-truth answers by using LLMs as judges.</p>
+        <h4>Core RAGAS metrics</h4>
+        <ul>
+          <li><strong>Faithfulness:</strong> does the answer contain only information supported by the retrieved context? (0–1). Detects hallucination relative to context. Your APPR chatbot achieved 0.87.</li>
+          <li><strong>Answer Relevance:</strong> is the answer relevant to the question? (0–1). Detects off-topic responses.</li>
+          <li><strong>Context Precision:</strong> of the retrieved chunks, what fraction were actually relevant? (0–1). Measures retrieval precision.</li>
+          <li><strong>Context Recall:</strong> did retrieval surface all relevant context needed to answer? (requires reference). Measures retrieval recall.</li>
+        </ul>
+        <h4>Production instrumentation</h4>
+        <pre><span class="kw">import</span> mlflow
+<span class="kw">from</span> ragas <span class="kw">import</span> evaluate
+<span class="kw">from</span> ragas.metrics <span class="kw">import</span> faithfulness, answer_relevancy
+
+<span class="kw">with</span> mlflow.<span class="fn">start_run</span>(run_name=<span class="str">"rag_eval_daily"</span>):
+    results = <span class="fn">evaluate</span>(
+        dataset=eval_dataset,
+        metrics=[faithfulness, answer_relevancy]
+    )
+    mlflow.<span class="fn">log_metrics</span>({
+        <span class="str">"faithfulness"</span>: results[<span class="str">"faithfulness"</span>],
+        <span class="str">"answer_relevancy"</span>: results[<span class="str">"answer_relevancy"</span>]
+    })</pre>
+        <h4>Production tracking cadence</h4>
+        <ul>
+          <li>Run RAGAS evaluation on 100-question golden set after every model/retriever update</li>
+          <li>Track metric trends in MLflow — alert if faithfulness drops &gt;5% from baseline</li>
+          <li>Log failed queries (faithfulness &lt;0.7) as artifacts for manual review + dataset expansion</li>
+        </ul>
+        <div class="tip"><strong>Staff insight:</strong> Faithfulness is the most actionable metric for production RAG — a faithfulness drop tells you the LLM is hallucinating relative to its context, which usually means the retrieval quality degraded (wrong chunks surfaced) or the prompt changed behavior. Track it weekly in production, not just at release time.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CATEGORY 8: STAFF LEADERSHIP ===== -->
+<section class="cat-sec" data-cat="lead">
+  <div class="cat-hdr">
+    <span class="cat-ico">🎯</span>
+    <span class="cat-ttl" style="color:var(--cat-lead)">Staff Engineer Leadership & Influence</span>
+    <span class="cat-pill" style="color:var(--cat-lead)">5 questions</span>
+  </div>
+
+  <div class="qc" data-cat="lead" data-id="1">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">50</span>
+      <div class="qtxt">You inherit a team's Spark codebase: 3-hour jobs, no documentation, no tests. What's your 30-60-90 day plan?</div>
+      <div class="qbdg"><span class="db db-d">Design</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <h4>Days 1–30 — Listen &amp; Learn (change nothing)</h4>
+        <ul>
+          <li>Shadow all pipeline runs, read every line of code without changing it</li>
+          <li>Profile ALL jobs: execution time, cost, resource utilization (Spark UI + Databricks Cost)</li>
+          <li>Interview each team member: "What's the most fragile thing here?" "What keeps you up at night?"</li>
+          <li>Map data lineage: what feeds what? Build a dependency graph.</li>
+          <li>Identify the "hero jobs" — the ones everyone fears touching</li>
+          <li><strong>Deliverable:</strong> written findings report + risk matrix (what could break production today?)</li>
+        </ul>
+        <h4>Days 31–60 — Quick wins (build trust)</h4>
+        <ul>
+          <li>Fix critical reliability issues first (the things keeping team up at night)</li>
+          <li>Document the hero jobs — remove single points of knowledge</li>
+          <li>Add monitoring: Spark UI alerts, cost anomaly detection, basic data quality checks</li>
+          <li>Extract common patterns into shared libraries (no more copy-paste Spark code)</li>
+          <li>Establish CI/CD pipeline if nonexistent (even a simple pytest + GitHub Actions)</li>
+          <li><strong>Deliverable:</strong> top 3 performance fixes with measured before/after metrics</li>
+        </ul>
+        <h4>Days 61–90 — Architecture (build the roadmap)</h4>
+        <ul>
+          <li>Propose architectural improvements (medallion architecture, Delta migration if not there)</li>
+          <li>Build team buy-in for multi-quarter roadmap — involve the team in the design</li>
+          <li>Define coding standards + PR review process</li>
+          <li><strong>Deliverable:</strong> 6-month roadmap with business case, presented to engineering leadership</li>
+        </ul>
+        <div class="tip"><strong>Staff insight:</strong> The biggest mistake is changing things in the first 30 days before fully understanding the system. Earn trust by fixing real, stated problems before proposing wholesale rewrites. "I fixed the thing you told me was breaking you" builds more credibility than "I rewrote everything in the Right Way."</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="lead" data-id="2">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">51</span>
+      <div class="qtxt">How do you drive technical consensus across teams when standardizing on a data platform technology? Walk me through your RFC process.</div>
+      <div class="qbdg"><span class="db db-d">Design</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <h4>RFC (Request for Comments) process</h4>
+        <ul>
+          <li><strong>1. Write the RFC:</strong> 2-pager — problem statement, proposed solution, alternatives considered, trade-offs, explicit success metrics, rollback plan. The quality of the RFC signals the quality of your thinking.</li>
+          <li><strong>2. Async-first:</strong> share RFC with all stakeholders 1 week before any meeting. Collect written feedback in comments. Most concerns surface in writing before the meeting — efficiency +2×.</li>
+          <li><strong>3. Address every comment in writing:</strong> respond to each concern in the RFC itself. Either update the RFC (they were right) or explain why not (document the reasoning). Shows you took their input seriously.</li>
+          <li><strong>4. Decision meeting (only if needed):</strong> focused only on unresolved disagreements. Not a read-along of the RFC. Come with a decision criteria stated upfront: "We'll choose based on migration cost, operational complexity, and query latency SLA."</li>
+          <li><strong>5. Trial period:</strong> propose 90-day pilot with explicit rollback criteria. "If P95 query latency exceeds X after 30 days, we revert." Reduces resistance — people agree to try, not commit forever.</li>
+          <li><strong>6. ADR (Architecture Decision Record):</strong> record the final decision, the alternatives rejected, and the reasoning. Future engineers will thank you when they need to understand why.</li>
+        </ul>
+        <h4>Political realities</h4>
+        <ul>
+          <li>Identify champions early — influential engineers who already want the change</li>
+          <li>Understand skeptics' real concerns (often not technical — it's about risk, ownership, learning curve)</li>
+          <li>Frame as solving their current pain, not as "you've been doing it wrong"</li>
+        </ul>
+        <div class="tip"><strong>Staff insight:</strong> The RFC process works because it separates "understanding the proposal" (async, writing) from "deciding" (meeting). Most meeting time in tech is wasted on information transfer that should have been a document. If you can't write a clear 2-pager on your proposal, it's not ready for consensus yet.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="lead" data-id="3">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">52</span>
+      <div class="qtxt">How do you evaluate build vs buy for a critical data platform component (e.g., orchestration, feature store, data catalog)?</div>
+      <div class="qbdg"><span class="db db-d">Design</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <h4>Framework: Total Cost of Ownership vs Strategic Value</h4>
+        <ul>
+          <li><strong>Is this a differentiator?</strong> Does building this give your company a competitive advantage? If no → strong signal to buy. Data orchestration is not your competitive advantage. Your domain-specific data quality rules might be.</li>
+          <li><strong>Build TCO:</strong> (engineering time to build) + (ongoing maintenance, team growth, on-call burden, security patches, documentation, onboarding new engineers). People consistently underestimate maintenance by 3–5×.</li>
+          <li><strong>Buy TCO:</strong> licensing cost + integration engineering + vendor lock-in risk + customization limits. People consistently underestimate integration cost by 2–3×.</li>
+          <li><strong>Maturity of the OSS/vendor solution:</strong> does it solve 90%+ of your need? If you need to fork it or build extensive plugins → effectively building anyway at higher cost.</li>
+          <li><strong>Team capability:</strong> do you have engineers who can build AND maintain this category of system at production quality? Be honest.</li>
+          <li><strong>Time to value:</strong> buy gets you to production in weeks; build in months. What does delay cost?</li>
+        </ul>
+        <h4>Databricks-specific: buy all the platform, own your domain logic</h4>
+        <p>Buy: Delta Lake, MLflow, Unity Catalog, Workflows, Feature Store. Own: domain-specific transformations, business rules, data quality frameworks, API integrations. The platform is commodity; your domain knowledge is the moat.</p>
+        <div class="tip"><strong>Staff insight:</strong> The most common mistake is building infrastructure components that are already solved by mature tools. I've seen teams spend 18 months building a feature store that Feast (OSS) or Databricks Feature Store would have covered in 2 weeks. Redirect that engineering to problems where you can genuinely compete.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="lead" data-id="4">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">53</span>
+      <div class="qtxt">Describe the most significant architectural change you drove. How did you handle resistance, and what would you do differently?</div>
+      <div class="qbdg"><span class="db db-d">Design</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <p><em>Use your own story here — structure it as STAR. Below is a template with prompts:</em></p>
+        <h4>Situation</h4>
+        <p>Describe the before state: what was broken, what was the business pain? Use numbers: "3-hour processing time", "34 manual reviews per case", "88% of budget on incorrect rulings".</p>
+        <h4>Task</h4>
+        <p>Your specific responsibility: "Drive adoption of LangGraph + Claude-based automation across the APPR claims workflow involving 3 teams."</p>
+        <h4>Action — handling resistance</h4>
+        <ul>
+          <li><strong>Built a proof-of-concept that spoke to the skeptics' concerns:</strong> didn't argue theory — showed working demo with real data from their pipeline</li>
+          <li><strong>Found a champion:</strong> got one respected senior engineer on board first — they became an internal advocate</li>
+          <li><strong>Ran a bake-off on a non-critical pipeline:</strong> reduced risk perception ("we're not changing production, just comparing")</li>
+          <li><strong>Quantified the business case:</strong> "88% processing time reduction, 42% cost reduction" speaks to VP in their language</li>
+          <li><strong>Created a migration guide + office hours:</strong> reduced adoption friction — made it easy to do the right thing</li>
+          <li><strong>Celebrated early adopters publicly:</strong> recognition drives behavior more than mandates</li>
+        </ul>
+        <h4>Result</h4>
+        <p>Quantify everything: latency reduction %, cost reduction %, team adoption %, time to migrate remaining pipelines.</p>
+        <h4>What I'd do differently</h4>
+        <p>Strongest interviews include genuine reflection: "I spent 2 weeks building the POC before showing it to skeptics — I should have done 2 conversations first to understand their actual concerns, which were about explainability, not performance. Would have saved significant rework."</p>
+        <div class="tip"><strong>Staff insight:</strong> Never ask people to take on risk you haven't taken yourself. Dogfood the architectural change first on your own pipeline, publish the results, then invite others. "I put my name on it first" is the most credible form of technical advocacy.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc" data-cat="lead" data-id="5">
+    <div class="qh" onclick="toggleQ(this)">
+      <span class="qnum">54</span>
+      <div class="qtxt">Databricks vs Snowflake for a net-new data platform. What's your decision framework, and what's the right answer for a company doing 60% analytics + 40% ML?</div>
+      <div class="qbdg"><span class="db db-d">Design</span></div>
+      <button class="mb" onclick="toggleMaster(event,this)" title="Mark mastered">☐</button>
+      <span class="qtg">▾</span>
+    </div>
+    <div class="qbody">
+      <div class="albl">↳ Staff-Level Answer</div>
+      <div class="ab">
+        <h4>The decision framework</h4>
+        <ul>
+          <li><strong>Primary workload type:</strong> pure SQL analytics / BI reporting → Snowflake's simpler model wins. Complex ETL, Python-heavy transformation, streaming → Databricks wins.</li>
+          <li><strong>ML/AI requirements:</strong> any significant ML investment → Databricks (MLflow, Feature Store, Model Serving, native Python, LangChain/LangGraph integration). Snowflake ML (Cortex) is catching up but immature for custom model training.</li>
+          <li><strong>Team skills:</strong> SQL-first team → Snowflake's query surface is simpler. Python/Spark engineers → Databricks.</li>
+          <li><strong>Open vs proprietary:</strong> Delta Lake is open format (reads without Databricks). Snowflake tables are proprietary format. For data portability and multi-engine access (Trino, Athena, DuckDB reading Delta) → Databricks.</li>
+          <li><strong>Data sharing:</strong> Snowflake Data Clean Rooms and Marketplace for external sharing → Snowflake. Internal cross-team sharing → UC Delta Sharing also works.</li>
+          <li><strong>Ops overhead:</strong> Snowflake is fully managed, near-zero infra work. Databricks requires more platform engineering to run well at scale.</li>
+        </ul>
+        <h4>For 60% analytics + 40% ML: the right answer</h4>
+        <p><strong>Databricks as primary platform</strong>, with Databricks SQL serving the analytics workload. The 40% ML investment justifies the Databricks platform overhead. Snowflake would require a second ML platform, fragmenting the team and doubling operational complexity. DBSQL is competitive with Snowflake for SQL analytics workloads (Photon engine, serverless warehouse).</p>
+        <p><strong>Exception:</strong> if the analytics team is pure SQL, non-technical, and the ML team is a small separate group — a hybrid (Snowflake for analytics serving, Databricks for ML/ETL) can work. But at 40% ML, the unified platform argument wins.</p>
+        <div class="tip"><strong>Staff insight:</strong> The "Databricks vs Snowflake" framing is usually wrong at Staff level. The real question is: what's the dominant access pattern, who are the primary users, and where does the company's differentiation come from? Answer those questions, then the platform choice follows logically. Avoid platform religious wars — both are excellent tools for different strengths.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="no-res" id="nr">No questions match your search. Try different keywords.</div>
+
+<footer class="ftr">
+  <p>54 questions · 8 categories · Staff / Principal level · $350K–$400K target</p>
+  <p style="margin-top:6px;font-size:11px;opacity:.5">Built for Spark 3.5 · Databricks Runtime 14+ · Delta Lake 3.0+</p>
+</footer>
+
+</div><!-- /wrap -->
+
+<script>
+var TOTAL = 54;
+
+function toggleQ(hdr) {
+  hdr.closest('.qc').classList.toggle('open');
+}
+
+function toggleMaster(e, btn) {
+  e.stopPropagation();
+  var card = btn.closest('.qc');
+  var key = 'M_' + card.dataset.cat + '_' + card.dataset.id;
+  if (card.classList.toggle('mastered')) {
+    localStorage.setItem(key, '1');
+    btn.textContent = '✓';
+  } else {
+    localStorage.removeItem(key);
+    btn.textContent = '☐';
+  }
+  updateProgress();
+}
+
+function updateProgress() {
+  var m = document.querySelectorAll('.qc.mastered').length;
+  var pct = (m / TOTAL * 100).toFixed(1);
+  document.getElementById('pf').style.width = pct + '%';
+  document.getElementById('pc').textContent = m + ' / ' + TOTAL;
+}
+
+function resetAll() {
+  if (!confirm('Reset all progress?')) return;
+  document.querySelectorAll('.qc').forEach(function(c) {
+    localStorage.removeItem('M_' + c.dataset.cat + '_' + c.dataset.id);
+    c.classList.remove('mastered');
+    var b = c.querySelector('.mb');
+    if (b) b.textContent = '☐';
+  });
+  updateProgress();
+}
+
+var currentCat = 'all';
+
+function filter(cat) {
+  currentCat = cat;
+  document.querySelectorAll('.tab').forEach(function(t) {
+    t.classList.toggle('on', t.dataset.cat === cat);
+  });
+  document.querySelectorAll('.cat-sec').forEach(function(s) {
+    s.style.display = (cat === 'all' || s.dataset.cat === cat) ? '' : 'none';
+  });
+  applySearch();
+}
+
+function search() {
+  applySearch();
+}
+
+function applySearch() {
+  var q = document.getElementById('si').value.trim().toLowerCase();
+  var anyVis = false;
+  document.querySelectorAll('.qc').forEach(function(card) {
+    var sec = card.closest('.cat-sec');
+    if (sec && sec.style.display === 'none') {
+      card.classList.add('hidden');
+      return;
+    }
+    if (!q) {
+      card.classList.remove('hidden');
+      anyVis = true;
+      return;
+    }
+    var txt = card.querySelector('.qtxt').textContent.toLowerCase();
+    var body = card.querySelector('.ab').textContent.toLowerCase();
+    if (txt.includes(q) || body.includes(q)) {
+      card.classList.remove('hidden');
+      anyVis = true;
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+  document.getElementById('nr').style.display = anyVis ? 'none' : 'block';
+}
+
+(function init() {
+  document.querySelectorAll('.qc').forEach(function(c) {
+    var key = 'M_' + c.dataset.cat + '_' + c.dataset.id;
+    if (localStorage.getItem(key)) {
+      c.classList.add('mastered');
+      var b = c.querySelector('.mb');
+      if (b) b.textContent = '✓';
+    }
+  });
+  updateProgress();
+})();
+</script>
+</body>
+</html>
